@@ -9,10 +9,10 @@
 #define BLOCKSIZE 256
 
 //structure of a node
-typedef struct{
+typedef struct tr_n_t{
 	int key;
-	struct tree_node *left;
-	struct tree_node *right;
+	struct tr_n_t *left;
+	struct tr_n_t *right;
 	int height;
 }tree_node;
 
@@ -24,10 +24,16 @@ int size_left;
 tree_node *get_node(){
 	tree_node *tmp;
 	if (free_list != NULL){
-
+		tmp = free_list;
+		free_list = free_list -> left;
 	}
 	else{
-
+		if (current_block == NULL || size_left == 0){
+			current_block = (tree_node *) malloc(BLOCKSIZE * sizeof(tree_node));
+			size_left = BLOCKSIZE;
+		}
+		tmp = current_block++;
+		size_left -= 1;
 	}
 	return tmp;
 }
