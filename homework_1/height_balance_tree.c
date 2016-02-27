@@ -44,7 +44,7 @@ void return_node(tree_node *node){
 }
 
 void right_rotation(tree_node *n){
-	tree_node temp_node;
+	tree_node *temp_node;
 	int temp_key;
 
 	temp_node = n->right;
@@ -62,7 +62,7 @@ void right_rotation(tree_node *n){
 }
 
 void left_rotation(tree_node *n){
-	tree_node temp_node;
+	tree_node *temp_node;
 	int temp_key;
 
 	temp_node = n->left;
@@ -79,7 +79,12 @@ void left_rotation(tree_node *n){
 	n->left->key   = temp_key;
 }
 
-
+tree_node *create_tree(void){
+	tree_node *temp_node;
+	temp_node = get_node();
+	temp_node->left = NULL;
+	return temp_node;
+}
 
 
 int main(){
