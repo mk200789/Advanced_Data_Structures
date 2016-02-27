@@ -43,6 +43,44 @@ void return_node(tree_node *node){
 	free_list = node;
 }
 
+void right_rotation(tree_node *n){
+	tree_node temp_node;
+	int temp_key;
+
+	temp_node = n->right;
+	temp_key = n->key;
+
+	n->right = n->left;
+	n->key = n->left->key;
+
+	n->left = n->right->left;
+
+	n->right->left = n->right->right;
+
+	n->right->right = temp_node;
+	n->right->key = temp_key;
+}
+
+void left_rotation(tree_node *n){
+	tree_node temp_node;
+	int temp_key;
+
+	temp_node = n->left;
+	temp_key = n->key;
+
+	n->left = n->right;
+	n->key  = n->right->key;
+
+	n->right = n->left->right;
+
+	n->left->right = n->left->left;
+	
+	n->left->left  = temp_node;
+	n->left->key   = temp_key;
+}
+
+
+
 
 int main(){
 	return 0;
