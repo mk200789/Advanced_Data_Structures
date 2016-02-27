@@ -38,6 +38,11 @@ tree_node *get_node(){
 	return tmp;
 }
 
+void return_node(tree_node *node){
+	node->left = free_list;
+	free_list = node;
+}
+
 
 int main(){
 	return 0;
