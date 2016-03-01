@@ -86,6 +86,20 @@ tree_node *create_tree(void){
 	return temp_node;
 }
 
+int insert(tree_node *tree, int new_key, int *new_object){
+	tree_node *temp_node;
+	int finished;
+
+	if(tree->left == NULL){
+		//empty
+		
+	}
+	else{
+
+	}
+	return 0;
+}
+
 
 int main(){
 	return 0;
