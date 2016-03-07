@@ -91,10 +91,57 @@ int insert(tree_node *tree, int new_key, int *new_object){
 	int finished;
 
 	if(tree->left == NULL){
-		//empty
-		
+		//empty tree
+		tree->left = (tree_node *) new_object;
+		tree->key = new_key;
+		tree->height = 0;
+		tree->right = NULL;
 	}
 	else{
+		tree_node *path_stack[100];
+		int path_st_ptr = 0;
+		while(temp_node->right != NULL){
+			path_stack[path_st_ptr++] = temp_node;
+			if (new_key < temp_node->key){
+				temp_node = temp_node->left;
+			}
+			else{
+				temp_node = temp_node->right;
+			}
+		}
+
+		//leaf is found, check see if it's distinct
+		if (temp_node->key == new_key){
+			//exists
+			return -1;
+		}
+		else{
+			//key is distinct, perform insert
+			tree_node *new_leaf, *old_leaf;
+			
+			old_leaf = get_node();
+			old_leaf->left = temp_node->left;
+			old_leaf->key = temp_node->key;
+			old_leaf->right = NULL;
+			old_leaf->height = 0;
+
+			new_leaf = get_node();
+			new_leaf->left = (tree_node *) new_object;
+			new_leaf->key = new_key;
+			new_leaf->right = NULL;
+			new_leaf->height = 0;
+
+			if (temp_node->key < new_key){
+				temp_node->left = old_leaf;
+				temp_node->right = new_leaf;
+				temp_node->key = new_key;
+			}
+			else{
+				temp_node->left = new_leaf;
+				temp_node->right = old_leaf;
+			}
+			temp_node->height= 0;
+		}
 
 	}
 	return 0;
