@@ -116,7 +116,7 @@ int insert(tree_node *tree, int new_key, int *new_object){
 			return -1;
 		}
 		else{
-			//key is distinct, perform insert
+			//key is distinct, perform INSERT
 			tree_node *new_leaf, *old_leaf;
 			
 			old_leaf = get_node();
@@ -141,6 +141,63 @@ int insert(tree_node *tree, int new_key, int *new_object){
 				temp_node->right = old_leaf;
 			}
 			temp_node->height= 0;
+		}
+
+		//REBALANCE tree
+		finished = 0;
+		while(path_st_ptr > 0  && !finished){
+			int temp_height , old_height;
+			temp_node = path_stack[path_st_ptr--];
+			old_height = temp_node->height;
+
+			if(temp_node->left->height - temp_node->right->height == 2){
+
+				if (temp_node->left->left->height - temp_node->right->height == 1){
+					right_rotation(temp_node);
+					temp_node->right->height = temp_node->right->left->height + 1;
+					temp_node->height = temp_node->right->height + 1;
+				}
+				else{
+					left_rotation(temp_node->left);
+					right_rotation(temp_node);
+					temp_height = temp_node->left->left->height;
+					temp_node->left->height = temp_height + 1;
+					temp_node->right->height = temp_height + 1;
+					temp_node->height = temp_height + 2;
+				}
+
+			}
+			else if (temp_node->left->height - temp_node->right->height == -2){
+
+				if (temp_node->right->right->height - temp_node->left->height == 1){
+					left_rotation(temp_node);
+					temp_node->left->height = temp_node->left->right->height + 1;
+					temp_node->height = temp_node->left->height + 1;
+				}
+				else{
+					right_rotation(temp_node->right);
+					left_rotation(temp_node);
+					temp_height = temp_node->right->right->height;
+					temp_node->right->height = temp_height + 1;
+					temp_node->left->height = temp_height + 1;
+					temp_node->height = temp_height + 2;
+				}
+
+			}
+			else{
+				//if no rotation needed, update height
+				if (temp_node->left->height > temp_node->right->height){
+					temp_node->height = temp_node->left->height + 1;
+				}
+				else{
+					temp_node->height = temp_node->right->height + 1;
+				}
+
+			}
+
+			if (temp_node->height == old_height){
+				finished = 1;
+			}
 		}
 
 	}
