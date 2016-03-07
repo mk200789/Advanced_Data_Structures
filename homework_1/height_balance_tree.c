@@ -204,6 +204,31 @@ int insert(tree_node *tree, int new_key, int *new_object){
 	return 0;
 }
 
+int * delete(tree_node *tree, int delete_key){
+	tree_node *temp_node, *upper_node, *other_node;
+	int *deleted_object;
+	int finished;
+	if (tree->left == NULL){
+		//empty tree
+		return NULL;
+	}
+	else if (tree->right == NULL){
+		//object is on the left of the tree
+		if (delete_key == tree->key){
+			deleted_object = (int *) tree->left;
+			tree->left = NULL;
+			return deleted_object;
+		}
+		else{
+			return NULL;
+		}
+	}
+	else{
+		//both side of the tree isn't empty.
+	}
+	return deleted_object;
+}
+
 
 int main(){
 	return 0;
