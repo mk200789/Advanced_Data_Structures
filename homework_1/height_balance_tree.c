@@ -225,6 +225,22 @@ int * delete(tree_node *tree, int delete_key){
 	}
 	else{
 		//both side of the tree isn't empty.
+		tree_node *path_stack[100];
+		int path_st_ptr = 0;
+		temp_node = tree;
+
+		while (temp_node->right != NULL){
+			path_stack[path_st_ptr++] = temp_node;
+			upper_node = temp_node;
+			if (delete_key < temp_node->key){
+				temp_node = upper_node->left;
+				other_node = upper_node->right;
+			}
+			else{
+				temp_node = upper_node->right;
+				other_node = upper_node->left;
+			}
+		}
 	}
 	return deleted_object;
 }
