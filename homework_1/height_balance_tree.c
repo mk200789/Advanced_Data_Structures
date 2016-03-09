@@ -252,13 +252,69 @@ int * delete(tree_node *tree, int delete_key){
 			upper_node->right = other_node->right;
 			upper_node->height = other_node->height;
 			deleted_object = (int *) temp_node->left;
-			return temp_node;
-			return other_node;
+			return_node(temp_node);
+			return_node(other_node);
 		}
 
 		//rebalancing tree
+		finished = 0;
+		path_st_ptr = 0;
+		while(path_st_ptr>0 && !finished){
+			int temp_height, old_height;
+			temp_node = path_stack[path_st_ptr--];
+			old_height = temp_node->height;
+
+			if(temp_node->left->height - temp_node->right->height == 2){
+
+				if (temp_node->left->left->height - temp_node->right->height == 1){
+					right_rotation(temp_node);
+					temp_node->right->height = temp_node->right->left->height + 1;
+					temp_node->height = temp_node->right->height + 1;
+				}
+				else{
+					left_rotation(temp_node->left);
+					right_rotation(temp_node);
+					temp_height = temp_node->left->left->height;
+					temp_node->left->height = temp_height + 1;
+					temp_node->right->height = temp_height + 1;
+					temp_node->height = temp_height + 2;
+
+				}
+
+			}
+			else if (temp_node->left->height - temp_node->right->height == -2){
+
+				if (temp_node->right->right->height - temp_node->left->height == 1){
+					left_rotation(temp_node);
+					temp_node->left->height = temp_node->left->right->height + 1;
+					temp_node->height = temp_node->left->height + 1;
+				}
+				else{
+					right_rotation(temp_node->right);
+					left_rotation(temp_node);
+					temp_height = temp_node->right->right->height;
+					temp_node->left->height = temp_height + 1;
+					temp_node->right->height = temp_height + 1;
+					temp_node->height = temp_height + 2;
+				}
+
+			}
+			else{
+				if (temp_node->left->height > temp_node->right->height){
+					temp_node->height = temp_node->left->height + 1;
+				}
+				else{
+					temp_node->height = temp_node->right->height + 1;
+				}
+
+			}
+
+			if (old_height == temp_height){
+				finished = 1;
+			}
+		}
+		return deleted_object;
 	}
-	return deleted_object;
 }
 
 
