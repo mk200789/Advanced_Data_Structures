@@ -241,6 +241,22 @@ int * delete(tree_node *tree, int delete_key){
 				other_node = upper_node->left;
 			}
 		}
+
+		if (temp_node->key != delete_key){
+			deleted_object = NULL;
+		}
+		else{
+			//perform deletion
+			upper_node->key = other_node->key;
+			upper_node->left = other_node->left;
+			upper_node->right = other_node->right;
+			upper_node->height = other_node->height;
+			deleted_object = (int *) temp_node->left;
+			return temp_node;
+			return other_node;
+		}
+
+		//rebalancing tree
 	}
 	return deleted_object;
 }
