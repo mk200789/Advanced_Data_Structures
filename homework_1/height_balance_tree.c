@@ -237,6 +237,7 @@ int *find(tree_node *tree, int key){
 void check_tree(tree_node *tr, int depth, int lower, int upper){
 	if (tr->left == NULL){
 		printf("Empty tree\n");
+		return;
 	}
 	if (tr->key < lower || tr->key >= upper){
 		printf("Wrong key order\n");
@@ -255,6 +256,8 @@ void check_tree(tree_node *tr, int depth, int lower, int upper){
 		check_tree(tr->right, depth+1, tr->key, upper);
 	}
 }
+
+
 
 
 int * delete(tree_node *tree, int delete_key){
