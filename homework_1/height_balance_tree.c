@@ -204,9 +204,29 @@ int insert(tree_node *tree, int new_key, int *new_object){
 	return 0;
 }
 
-void check_tree(){
-	
+
+void check_tree(tree_node *tr, int depth, int lower, int upper){
+	if (tr->left == NULL){
+		printf("Empty tree\n");
+	}
+	if (tr->key < lower || tr->key >= upper){
+		printf("Wrong key order\n");
+	}
+	if (tr->right == NULL){
+		if ( (*(int *) tr->left) == 10*tr->key + 2){
+			printf("%d(%d) \n", tr->key, depth);
+		}
+		else{
+			printf("Wrong object\n");
+		}
+
+	}
+	else{
+		check_tree(tr->left, depth+1, lower, tr->key);
+		check_tree(tr->right, depth+1, tr->key, upper);
+	}
 }
+
 
 int * delete(tree_node *tree, int delete_key){
 	tree_node *temp_node, *upper_node, *other_node;
