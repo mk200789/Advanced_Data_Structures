@@ -204,6 +204,10 @@ int insert(tree_node *tree, int new_key, int *new_object){
 	return 0;
 }
 
+void check_tree(){
+	
+}
+
 int * delete(tree_node *tree, int delete_key){
 	tree_node *temp_node, *upper_node, *other_node;
 	int *deleted_object;
