@@ -204,6 +204,15 @@ int insert(tree_node *tree, int new_key, int *new_object){
 	return 0;
 }
 
+int *find(tree_node *tree, int key){
+	//find key in tree
+	if (tree->left == NULL){
+		//empty tree
+		return NULL;
+	}
+	return NULL;
+}
+
 
 void check_tree(tree_node *tr, int depth, int lower, int upper){
 	if (tr->left == NULL){
