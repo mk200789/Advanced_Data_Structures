@@ -314,10 +314,10 @@ int * delete(tree_node *tree, int delete_key){
 
 		//rebalancing tree
 		finished = 0;
-		path_st_ptr = 0;
+		path_st_ptr -= 1;
 		while(path_st_ptr>0 && !finished){
 			int temp_height, old_height;
-			temp_node = path_stack[path_st_ptr--];
+			temp_node = path_stack[--path_st_ptr];
 			old_height = temp_node->height;
 
 			if(temp_node->left->height - temp_node->right->height == 2){
