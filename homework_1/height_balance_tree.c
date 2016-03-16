@@ -100,6 +100,8 @@ int insert(tree_node *tree, int new_key, int *new_object){
 	else{
 		tree_node *path_stack[100];
 		int path_st_ptr = 0;
+		temp_node = tree;
+
 		while(temp_node->right != NULL){
 			path_stack[path_st_ptr++] = temp_node;
 			if (new_key < temp_node->key){
@@ -111,11 +113,10 @@ int insert(tree_node *tree, int new_key, int *new_object){
 		}
 
 		//leaf is found, check see if it's distinct
-		if (temp_node->key == new_key){
+		if (temp_node->key == new_key)
 			//exists
 			return -1;
-		}
-		else{
+		{
 			//key is distinct, perform INSERT
 			tree_node *new_leaf, *old_leaf;
 			
@@ -140,14 +141,14 @@ int insert(tree_node *tree, int new_key, int *new_object){
 				temp_node->left = new_leaf;
 				temp_node->right = old_leaf;
 			}
-			temp_node->height= 0;
+			temp_node->height= 1;
 		}
 
 		//REBALANCE tree
 		finished = 0;
 		while(path_st_ptr > 0  && !finished){
 			int temp_height , old_height;
-			temp_node = path_stack[path_st_ptr--];
+			temp_node = path_stack[--path_st_ptr];
 			old_height = temp_node->height;
 
 			if(temp_node->left->height - temp_node->right->height == 2){
@@ -178,8 +179,8 @@ int insert(tree_node *tree, int new_key, int *new_object){
 					right_rotation(temp_node->right);
 					left_rotation(temp_node);
 					temp_height = temp_node->right->right->height;
-					temp_node->right->height = temp_height + 1;
 					temp_node->left->height = temp_height + 1;
+					temp_node->right->height = temp_height + 1;
 					temp_node->height = temp_height + 2;
 				}
 
@@ -371,5 +372,70 @@ int * delete(tree_node *tree, int delete_key){
 
 
 int main(){
+	//new tree
+	tree_node  *searchtree;
+	searchtree = create_tree();
+
+	//store next input operator for the tree
+	char nextop;
+
+	printf("Made Height Balance Tree\n");
+
+	while( (nextop = getchar()) != 'q'){
+		if (nextop == 'i'){
+			//insert into the tree
+			int insertKey, *insertObject, success;
+			insertObject = (int *) malloc(sizeof(int));
+			scanf("%d", &insertKey);
+			*insertObject=10*insertKey+2;
+			success = insert(searchtree, insertKey, insertObject);
+			
+			if (success == 0){
+				//insert was sucessful
+				printf("Insert was sucessful, key = %d, object value = %d, height is %d\n", insertKey, *insertObject, searchtree->height);
+
+			}
+			else{
+				printf("Insert failed, success = %d\n", success);
+			}
+		}
+		if (nextop == 'f'){
+			//find object in tree
+			int findKey, *findObject;
+			scanf("%d", &findKey);
+			findObject = find(searchtree, findKey);
+			
+			if (findObject == NULL){
+				//key not found
+				printf("Find failed for key = %d\n", findKey);
+			}
+			else{
+				printf("Find successful for key = %d. Found object = %d\n", findKey, *findObject);
+			}
+		}
+		if (nextop == 'd'){
+			//delete key
+			int deleteKey, *deleteObject;
+			scanf("%d", &deleteKey);
+			deleteObject = delete(searchtree, deleteKey);
+
+			if (deleteObject == NULL){
+				//could not delete key
+				printf("Delete failed for key = %d\n", deleteKey);
+			}
+			else{
+				printf("Delete succesful for key = %d\n. Deleted object = %d\n Height is now %d\n", deleteKey, *deleteObject, searchtree->height);
+			}
+		}
+		if (nextop == '?'){
+			//check tree
+			printf("Checking tree ...\n");
+			check_tree(searchtree,0,-1000,1000);
+			if (searchtree->left != NULL){
+				printf("Key in root is %d with height %d\n", searchtree->key, searchtree->height);
+				printf("Finished checking tree\n");
+			}
+		}
+	}
 	return 0;
 }
