@@ -204,13 +204,32 @@ int insert(tree_node *tree, int new_key, int *new_object){
 	return 0;
 }
 
+
 int *find(tree_node *tree, int key){
+	tree_node *temp_node;
 	//find key in tree
 	if (tree->left == NULL){
 		//empty tree
 		return NULL;
 	}
-	return NULL;
+	else{
+		temp_node = tree;
+		while(temp_node->right != NULL){
+			if (key < temp_node->key){
+				temp_node = temp_node->left;
+			}
+			else{
+				temp_node = temp_node->right;
+			}
+		}
+
+		if (temp_node->key == key){
+			return ( (int *)temp_node->left);
+		}
+		else{
+			return NULL;
+		}
+	}
 }
 
 
