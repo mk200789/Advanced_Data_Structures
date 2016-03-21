@@ -21,6 +21,24 @@ tree_node *free_list = NULL;
 int size_left;
 
 
+tree_node *get_node(){
+	tree_node *tmp;
+	if (free_list != NULL){
+		tmp = free_list;
+		free_list = free_list -> left;
+	}
+	else{
+		if (current_block == NULL || size_left == 0){
+			current_block = (tree_node *) malloc(BLOCKSIZE * sizeof(tree_node));
+			size_left = BLOCKSIZE;
+		}
+		tmp = current_block++;
+		size_left -= 1;
+	}
+	return tmp;
+}
+
+
 
 void right_rotation(tree_node *n){
 	//note to self: modified for the new tree structure
