@@ -92,6 +92,26 @@ tree_node *create_tree(void){
 }
 
 
+int insert(tree_node *tree, int new_key, int *new_object){
+	tree_node *temp_node;
+	int finished;
+
+	if(tree->left == NULL){
+		//empty tree. no children
+		tree->left = (tree_node *) new_object;
+		//tree->key = new_key;
+		tree->key +=1;
+		tree->height = 0;
+		tree->right = NULL;
+	}
+
+	if(tree->key == 1){
+		//there's one child in total
+	}
+	return 0;
+}
+
+
 int main(){
 	return 0;
 }
