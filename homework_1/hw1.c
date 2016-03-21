@@ -106,7 +106,21 @@ int insert(tree_node *tree, int new_key, int *new_object){
 	}
 
 	if(tree->key == 1){
-		//there's one child in total
+		//the root has one child
+		tree_node *left_child, *right_child;
+		
+		left_child = get_node();
+		right_child = get_node();
+
+		left_child->left = tree->left;
+		left_child->key = tree->key;
+
+		right_child->left = (tree_node *) new_object;
+		right_child->key += 1;
+
+		tree->left = left_child;
+		tree->right = right_child;
+		tree->key += 1;
 	}
 	return 0;
 }
