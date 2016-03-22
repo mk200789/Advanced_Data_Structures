@@ -192,7 +192,7 @@ void append_line(tree_node *tree, char *new_line){
 }
 
 
-int insert(tree_node *tree, int new_key, char *new_line){
+int insert_line(tree_node *tree, int new_key, char *new_line){
 	tree_node *temp_node;
 	int finished;
 
