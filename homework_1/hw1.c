@@ -192,13 +192,13 @@ void append_line(tree_node *tree, char *new_line){
 }
 
 
-int insert(tree_node *tree, int new_key, int *new_object){
+int insert(tree_node *tree, int new_key, char *new_line){
 	tree_node *temp_node;
 	int finished;
 
 	if(tree->left == NULL){
 		//empty tree. no children
-		tree->left = (tree_node *) new_object;
+		tree->left = (tree_node *) new_line;
 		//tree->key = new_key;
 		tree->key +=1;
 		tree->height = 0;
@@ -215,7 +215,7 @@ int insert(tree_node *tree, int new_key, int *new_object){
 		left_child->left = tree->left;
 		left_child->key = tree->key;
 
-		right_child->left = (tree_node *) new_object;
+		right_child->left = (tree_node *) new_line;
 		right_child->key += 1;
 
 		tree->left = left_child;
@@ -225,7 +225,7 @@ int insert(tree_node *tree, int new_key, int *new_object){
 
 	if (tree->key < new_key){
 		//go to the left branch
-
+		append_line(tree, new_line);
 	}
 	else{
 		//go to the right branch
