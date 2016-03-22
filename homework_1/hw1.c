@@ -435,6 +435,13 @@ char * delete(tree_node *tree, int delete_key){
 }
 
 
+char *set_line(tree_node tree, int new_key, char *new_line){
+	//sets the line of number `new_key`, if such a line exists, to `new_line`, and returns a 
+	//pointer to the previous line of that number. If no line of that number exists, it does
+	//not change the structure and returns NULL.
+	return 0;
+}
+
 
 int main(){
 	return 0;
