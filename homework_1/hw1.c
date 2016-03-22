@@ -236,7 +236,7 @@ int insert_line(tree_node *tree, int new_key, char *new_line){
 		while(temp_node->right != NULL){
 			stack[stack_ptr++] = temp_node;
 			temp_node->key += 1;
-			if (new_key < temp_node->left->key){
+			if (new_key <= temp_node->left->key){
 				temp_node = temp_node->left;
 			}
 			else{
@@ -320,6 +320,113 @@ int insert_line(tree_node *tree, int new_key, char *new_line){
 	}
 	return 0;
 }
+
+char * delete(tree_node *tree, int delete_key){
+	tree_node *temp_node, *upper_node, *other_node;
+	char *deleted_object;
+	int finished;
+
+	if (tree->left == NULL){
+		//empty tree
+		return NULL;
+	}
+	else{
+		//both side of the tree isn't empty.
+		tree_node *stack[100];
+		int stack_ptr;
+		temp_node = tree;
+
+		while (temp_node->right != NULL){
+			stack[stack_ptr++] = temp_node;
+			upper_node = temp_node;
+			if (delete_key <= temp_node->left->key){
+				temp_node = upper_node->left;
+				other_node = upper_node->right;
+			}
+			else{
+				temp_node = upper_node->right;
+				other_node = upper_node->left;
+				delete_key -= temp_node->left->key;
+			}
+		}
+
+		temp_node = stack[--stack_ptr];
+
+		if (delete_key == 1){
+			//perform deletion
+			upper_node->key = other_node->key;
+			upper_node->left = other_node->left;
+			upper_node->right = other_node->right;
+			upper_node->height = other_node->height;
+			deleted_object = (char *) temp_node->left;
+
+
+			//rebalancing tree
+			finished = 0;
+			stack_ptr -= 1;
+
+			while(stack_ptr>0 && !finished){
+				int temp_height, old_height;
+				temp_node = stack[--stack_ptr];
+				old_height = temp_node->height;
+
+				if(temp_node->left->height - temp_node->right->height == 2){
+
+					if (temp_node->left->left->height - temp_node->right->height == 1){
+						right_rotation(temp_node);
+						temp_node->right->height = temp_node->right->left->height + 1;
+						temp_node->height = temp_node->right->height + 1;
+					}
+					else{
+						left_rotation(temp_node->left);
+						right_rotation(temp_node);
+						temp_height = temp_node->left->left->height;
+						temp_node->left->height = temp_height + 1;
+						temp_node->right->height = temp_height + 1;
+						temp_node->height = temp_height + 2;
+
+					}
+
+				}
+				else if (temp_node->left->height - temp_node->right->height == -2){
+
+					if (temp_node->right->right->height - temp_node->left->height == 1){
+						left_rotation(temp_node);
+						temp_node->left->height = temp_node->left->right->height + 1;
+						temp_node->height = temp_node->left->height + 1;
+					}
+					else{
+						right_rotation(temp_node->right);
+						left_rotation(temp_node);
+						temp_height = temp_node->right->right->height;
+						temp_node->left->height = temp_height + 1;
+						temp_node->right->height = temp_height + 1;
+						temp_node->height = temp_height + 2;
+					}
+
+				}
+				else{
+					if (temp_node->left->height > temp_node->right->height){
+						temp_node->height = temp_node->left->height + 1;
+					}
+					else{
+						temp_node->height = temp_node->right->height + 1;
+					}
+
+				}
+
+				if (old_height == temp_height){
+					finished = 1;
+				}
+			}
+			return deleted_object;
+		}
+		else{
+			return NULL;
+		}
+	}
+}
+
 
 
 int main(){
