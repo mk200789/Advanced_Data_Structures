@@ -193,6 +193,10 @@ void append_line(tree_node *tree, char *new_line){
 
 
 int insert_line(tree_node *tree, int new_key, char *new_line){
+	//Inserts the line before the line of the number `new_key`, if such
+	//a line exists, to `new_line` , renumbering all lines after that line.
+	//If no such line exists, it `appends(new_line)` as last line.
+	
 	tree_node *temp_node;
 	int finished;
 
@@ -322,6 +326,9 @@ int insert_line(tree_node *tree, int new_key, char *new_line){
 }
 
 char * delete(tree_node *tree, int delete_key){
+	//Deletes the line of the number `delete_key`, renumbering all lines
+	//after that line, and returns a pointer to the deleted line.
+
 	tree_node *temp_node, *upper_node, *other_node;
 	char *deleted_object;
 	int finished;
