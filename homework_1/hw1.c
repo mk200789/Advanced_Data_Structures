@@ -84,7 +84,7 @@ void left_rotation(tree_node *n){
 	*/
 }
 
-tree_node *create_tree(void){
+tree_node *create_text(void){
 	tree_node *temp_node;
 	temp_node = get_node();
 	temp_node->left = NULL;
@@ -196,7 +196,7 @@ int insert_line(tree_node *tree, int new_key, char *new_line){
 	//Inserts the line before the line of the number `new_key`, if such
 	//a line exists, to `new_line` , renumbering all lines after that line.
 	//If no such line exists, it `appends(new_line)` as last line.
-	
+
 	tree_node *temp_node;
 	int finished;
 
