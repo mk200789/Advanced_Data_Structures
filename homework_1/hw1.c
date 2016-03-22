@@ -7,6 +7,7 @@
 #include<stdlib.h>
 
 #define BLOCKSIZE 256
+#define STACK_MAX 100000
 
 //structure of a node
 typedef struct tr_n_t{
@@ -37,7 +38,6 @@ tree_node *get_node(){
 	}
 	return tmp;
 }
-
 
 
 void right_rotation(tree_node *n){
@@ -91,6 +91,106 @@ tree_node *create_tree(void){
 	return temp_node;
 }
 
+void append_line(tree_node *tree, char *new_line){
+	//appends `new_line` as a new last line
+	tree_node *temp_node;
+	int finished;
+
+	if(tree->left == NULL){
+		//empty tree
+		tree->left = (tree_node *) new_line;
+		tree->key += 1;
+		tree->right = NULL;
+		tree->height = 0;
+	}
+	else{
+		temp_node = tree;
+		tree_node *stack[100];
+		int stack_ptr = 0;
+
+		while (temp_node->right != NULL){
+			stack[stack_ptr++] = temp_node;
+			temp_node->key += 1;
+			temp_node =  temp_node->right;
+		}
+
+		tree_node *left_child, *right_child;
+		
+		left_child = get_node();
+		right_child = get_node();
+
+		left_child->left = temp_node->left;
+		left_child->key = temp_node->key;
+
+		right_child = (tree_node *)new_line;
+		right_child->key += 1;
+
+		temp_node->left = left_child;
+		temp_node->right = right_child;
+		temp_node->key += 1;
+		temp_node->height = 1;
+
+		//rebalance tree
+		finished = 0;
+
+		while (stack_ptr > 0 && !finished){
+			int temp_height, old_height;
+			temp_node = stack[--stack_ptr];
+			old_height = temp_node->height;
+
+			if(temp_node->left->height - temp_node->right->height == 2){
+
+				if (temp_node->left->left->height - temp_node->right->height == 1){
+					right_rotation(temp_node);
+					temp_node->right->height = temp_node->right->left->height + 1;
+					temp_node->height = temp_node->right->height + 1;
+				}
+				else{
+					left_rotation(temp_node->left);
+					right_rotation(temp_node);
+					temp_height = temp_node->left->left->height;
+					temp_node->left->height = temp_height + 1;
+					temp_node->right->height = temp_height + 1;
+					temp_node->height = temp_height + 2;
+				}
+
+			}
+			else if (temp_node->left->height - temp_node->right->height == -2){
+
+				if (temp_node->right->right->height - temp_node->left->height == 1){
+					left_rotation(temp_node);
+					temp_node->left->height = temp_node->left->right->height + 1;
+					temp_node->height = temp_node->left->height + 1;
+				}
+				else{
+					right_rotation(temp_node->right);
+					left_rotation(temp_node);
+					temp_height = temp_node->right->right->height;
+					temp_node->left->height = temp_height + 1;
+					temp_node->right->height = temp_height + 1;
+					temp_node->height = temp_height + 2;
+				}
+
+			}
+			else{
+				//if no rotation needed, update height
+				if (temp_node->left->height > temp_node->right->height){
+					temp_node->height = temp_node->left->height + 1;
+				}
+				else{
+					temp_node->height = temp_node->right->height + 1;
+				}
+
+			}
+
+			if (temp_node->height == old_height){
+				finished = 1;
+			}
+
+		}
+	}
+}
+
 
 int insert(tree_node *tree, int new_key, int *new_object){
 	tree_node *temp_node;
@@ -121,6 +221,14 @@ int insert(tree_node *tree, int new_key, int *new_object){
 		tree->left = left_child;
 		tree->right = right_child;
 		tree->key += 1;
+	}
+
+	if (tree->key < new_key){
+		//go to the left branch
+
+	}
+	else{
+		//go to the right branch
 	}
 	return 0;
 }
