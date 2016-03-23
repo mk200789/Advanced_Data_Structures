@@ -435,10 +435,44 @@ char * delete(tree_node *tree, int delete_key){
 }
 
 
-char *set_line(tree_node tree, int new_key, char *new_line){
+char *set_line(tree_node *tree, int new_key, char *new_line){
 	//sets the line of number `new_key`, if such a line exists, to `new_line`, and returns a 
 	//pointer to the previous line of that number. If no line of that number exists, it does
 	//not change the structure and returns NULL.
+	tree_node *temp_node;
+	char *new_object;
+
+	if(tree->left == NULL){
+		return NULL;
+	}
+	else if (tree->right == NULL){
+		return (char *)tree->left;
+	}
+	else{
+		temp_node = tree;
+		while(temp_node->right != NULL){
+			if (new_key <= temp_node->left->key){
+				temp_node = temp_node->left;
+			}
+			else{
+				temp_node = temp_node->right;
+				new_key -= temp_node->left->key;
+			}
+		}
+	}
+
+	if (new_key == 1){
+		new_object = (char *)temp_node->left;
+		temp_node->left = (tree_node *) new_line;
+		return new_object;
+	}
+	else{
+		return NULL;
+	}
+}
+
+int length_text(tree_node *tree){
+	//returns the number of lines of the current text/tree.
 	return 0;
 }
 
