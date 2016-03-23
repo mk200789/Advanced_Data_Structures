@@ -473,7 +473,12 @@ char *set_line(tree_node *tree, int new_key, char *new_line){
 
 int length_text(tree_node *tree){
 	//returns the number of lines of the current text/tree.
-	return 0;
+	if (tree->left == NULL){
+		return 0;
+	}
+	else{
+		return tree->key;
+	}
 }
 
 
