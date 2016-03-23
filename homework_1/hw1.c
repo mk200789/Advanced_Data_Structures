@@ -7,7 +7,7 @@
 #include<stdlib.h>
 
 #define BLOCKSIZE 256
-#define STACK_MAX 100000
+#define STACK_MAX 1000000
 
 //structure of a node
 typedef struct tr_n_t{
@@ -24,6 +24,7 @@ int size_left;
 
 tree_node *get_node(){
 	tree_node *tmp;
+	
 	if (free_list != NULL){
 		tmp = free_list;
 		free_list = free_list -> left;
@@ -34,9 +35,15 @@ tree_node *get_node(){
 			size_left = BLOCKSIZE;
 		}
 		tmp = current_block++;
+		tmp->left = NULL;
+		tmp->right = NULL;
+		tmp->key = 0;
+		tmp->height = 0;
 		size_left -= 1;
 	}
+	
 	return tmp;
+	
 }
 
 
@@ -46,7 +53,6 @@ void right_rotation(tree_node *n){
 	int temp_key;
 
 	temp_node = n->right;
-	temp_key = n->left->key;
 
 	n->right = n->left;
 
@@ -55,11 +61,7 @@ void right_rotation(tree_node *n){
 	n->right->left = n->right->right;
 
 	n->right->right = temp_node;
-	n->right->key = temp_key;
-	/*
-		or 
-		n->right->key = n->right->left->key + n->right->right->key;
-	*/
+	n->right->key = n->right->left->key + n->right->right->key;
 }
 
 void left_rotation(tree_node *n){
@@ -68,7 +70,6 @@ void left_rotation(tree_node *n){
 	int temp_key;
 
 	temp_node = n->left;
-	temp_key = n->right->key;
 
 	n->left = n->right;
 
@@ -77,17 +78,15 @@ void left_rotation(tree_node *n){
 	n->left->right = n->left->left;
 	
 	n->left->left  = temp_node;
-	n->left->key   = temp_key;
-	/*
-		or 
-		n->left->key = n->left->left->key + n->left->right->key;
-	*/
+	n->left->key   = n->left->key = n->left->left->key + n->left->right->key;
+
 }
 
-tree_node *create_text(void){
+tree_node *create_text(){
 	tree_node *temp_node;
 	temp_node = get_node();
 	temp_node->left = NULL;
+	
 	return temp_node;
 }
 
@@ -105,7 +104,7 @@ void append_line(tree_node *tree, char *new_line){
 	}
 	else{
 		temp_node = tree;
-		tree_node *stack[100];
+		tree_node *stack[STACK_MAX];
 		int stack_ptr = 0;
 
 		while (temp_node->right != NULL){
@@ -122,7 +121,7 @@ void append_line(tree_node *tree, char *new_line){
 		left_child->left = temp_node->left;
 		left_child->key = temp_node->key;
 
-		right_child = (tree_node *)new_line;
+		right_child->left = (tree_node *)new_line;
 		right_child->key += 1;
 
 		temp_node->left = left_child;
@@ -192,7 +191,7 @@ void append_line(tree_node *tree, char *new_line){
 }
 
 
-int insert_line(tree_node *tree, int new_key, char *new_line){
+void insert_line(tree_node *tree, int new_key, char *new_line){
 	//Inserts the line before the line of the number `new_key`, if such
 	//a line exists, to `new_line` , renumbering all lines after that line.
 	//If no such line exists, it `appends(new_line)` as last line.
@@ -233,7 +232,7 @@ int insert_line(tree_node *tree, int new_key, char *new_line){
 	}
 	else{
 		//go to the right branch
-		tree_node *stack[100];
+		tree_node *stack[STACK_MAX];
 		int stack_ptr = 0;
 		temp_node = tree;
 
@@ -244,8 +243,8 @@ int insert_line(tree_node *tree, int new_key, char *new_line){
 				temp_node = temp_node->left;
 			}
 			else{
-				temp_node = temp_node->right;
 				new_key -= temp_node->left->key;
+				temp_node = temp_node->right;
 			}
 		}
 
@@ -322,7 +321,6 @@ int insert_line(tree_node *tree, int new_key, char *new_line){
 		}
 
 	}
-	return 0;
 }
 
 char * delete_line(tree_node *tree, int delete_key){
@@ -339,38 +337,49 @@ char * delete_line(tree_node *tree, int delete_key){
 	}
 	else{
 		//both side of the tree isn't empty.
-		tree_node *stack[100];
-		int stack_ptr;
+		tree_node *stack[STACK_MAX];
+		int stack_ptr = 0;
 		temp_node = tree;
 
 		while (temp_node->right != NULL){
 			stack[stack_ptr++] = temp_node;
 			upper_node = temp_node;
 			if (delete_key <= temp_node->left->key){
-				temp_node = upper_node->left;
+				temp_node = temp_node->left;
 				other_node = upper_node->right;
 			}
 			else{
-				temp_node = upper_node->right;
-				other_node = upper_node->left;
 				delete_key -= temp_node->left->key;
+				other_node = upper_node->left;
+				temp_node = temp_node->right;
 			}
 		}
 
-		temp_node = stack[--stack_ptr];
+		tree_node *temp;
+		//temp_node = stack[--stack_ptr];
+		temp = stack[--stack_ptr];
 
 		if (delete_key == 1){
 			//perform deletion
-			upper_node->key = other_node->key;
 			upper_node->left = other_node->left;
 			upper_node->right = other_node->right;
 			upper_node->height = other_node->height;
+			upper_node->key = other_node->key;
 			deleted_object = (char *) temp_node->left;
+
+			int tempsize = stack_ptr;
+
+			while (stack_ptr > 0){
+				temp = stack[--stack_ptr];
+				temp->key -= 1;
+			}
 
 
 			//rebalancing tree
 			finished = 0;
-			stack_ptr -= 1;
+			stack_ptr = tempsize;
+
+			//stack_ptr -= 1;
 
 			while(stack_ptr>0 && !finished){
 				int temp_height, old_height;
@@ -439,8 +448,11 @@ char *set_line(tree_node *tree, int new_key, char *new_line){
 	//sets the line of number `new_key`, if such a line exists, to `new_line`, and returns a 
 	//pointer to the previous line of that number. If no line of that number exists, it does
 	//not change the structure and returns NULL.
-	tree_node *temp_node;
-	char *new_object;
+
+	//tree_node *temp_node;
+	//char *new_object;
+	tree_node *temp_node = (tree_node *)malloc(sizeof(tree_node));
+	char *new_object = (char *)malloc(sizeof(char)*1024);
 
 	if(tree->left == NULL){
 		return NULL;
@@ -483,7 +495,31 @@ int length_text(tree_node *tree){
 
 char *get_line(tree_node *tree, int key){
 	//gets the line of number `key`, if such a line exists, and returns NULL else.
-	return NULL;
+	tree_node *temp_node;
+	if (tree->left == NULL){
+		//empty tree
+		return NULL;
+	}
+	else{
+		temp_node = tree;
+		while(temp_node->right != NULL){
+			if (key <= temp_node->left->key){
+				//if the key is less than the current key in tree go left
+				temp_node = temp_node->left;
+			}
+			else{
+				key = key - temp_node->left->key;
+				temp_node = temp_node->right;
+			}
+		}
+
+		if (temp_node->left != NULL){
+			return (char *)temp_node->left;
+		}
+		else{
+			return NULL;
+		}
+	}
 }
 
 
