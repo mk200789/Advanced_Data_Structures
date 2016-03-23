@@ -481,6 +481,11 @@ int length_text(tree_node *tree){
 	}
 }
 
+char *get_line(tree_node *tree, int key){
+	//gets the line of number `key`, if such a line exists, and returns NULL else.
+	return NULL;
+}
+
 
 int main(){
 	return 0;
