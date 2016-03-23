@@ -325,7 +325,7 @@ int insert_line(tree_node *tree, int new_key, char *new_line){
 	return 0;
 }
 
-char * delete(tree_node *tree, int delete_key){
+char * delete_line(tree_node *tree, int delete_key){
 	//Deletes the line of the number `delete_key`, renumbering all lines
 	//after that line, and returns a pointer to the deleted line.
 
