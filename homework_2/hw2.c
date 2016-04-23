@@ -16,6 +16,9 @@ struct rect_list_t{
 	int y_max;
 }rect_list_t;
 
+
+//note to self: implement structure struct seg tree 2d t
+
 int main(){
 	return 0;
 }
