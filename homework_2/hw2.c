@@ -14,15 +14,15 @@ struct rect_list_t{
 	int x_max;
 	int y_min;
 	int y_max;
-}rect_list_t;
+};
 
 struct seg_tree_2d_t {
 	int key;
 	struct seg_tree_2d_t *left;
 	struct seg_tree_2d_t *right;
 	struct seg_tree_2d_t *tree;
-	struct seg_tree_2d_t *rect_interval;
-}seg_tree_2d;
+	struct rect_list_t *rect_interval;
+};
 
 int main(){
 	return 0;
