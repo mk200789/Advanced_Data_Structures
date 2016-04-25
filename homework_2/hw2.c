@@ -54,6 +54,14 @@ void return_node(seg_tree_2d_t *node)
    free_list = node;
 }
 
+seg_tree_2d_t *make_tree(seg_tree_2d_t *list){
+	//make a 2d segment tree
+	seg_tree_2d_t *temp_node, *root;
+	return root;
+}
+
+
+
 int main(){
 	return 0;
 }
