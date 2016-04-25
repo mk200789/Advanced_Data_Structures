@@ -28,6 +28,7 @@ seg_tree_2d_t *current_block = NULL;
 seg_tree_2d_t *free_list = NULL;
 int size_left;
 
+
 seg_tree_2d_t *get_node(){
 	seg_tree_2d_t *tmp;
 	
@@ -48,6 +49,10 @@ seg_tree_2d_t *get_node(){
 	
 }
 
+void return_node(seg_tree_2d_t *node)
+{  node->left = free_list;
+   free_list = node;
+}
 
 int main(){
 	return 0;
