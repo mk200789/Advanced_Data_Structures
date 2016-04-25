@@ -57,6 +57,12 @@ void return_node(seg_tree_2d_t *node)
 seg_tree_2d_t *make_tree(seg_tree_2d_t *list){
 	//make a 2d segment tree
 	seg_tree_2d_t *temp_node, *root;
+	typedef struct { struct seg_tree_2d_t *node1;
+					 struct seg_tree_2d_t *node2;
+					 int number;} st_item;
+	st_item current, left, right;
+	st_item stack[1000];
+	int st_ptr = 0;
 	return root;
 }
 
