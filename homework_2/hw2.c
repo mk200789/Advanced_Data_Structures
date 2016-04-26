@@ -49,9 +49,9 @@ seg_tree_2d_t *get_node(){
 	
 }
 
-void return_node(seg_tree_2d_t *node)
-{  node->left = free_list;
-   free_list = node;
+void return_node(seg_tree_2d_t *node){  
+	node->left = free_list;
+	free_list = node;
 }
 
 seg_tree_2d_t *make_tree(seg_tree_2d_t *list){
@@ -124,6 +124,13 @@ seg_tree_2d_t *make_tree(seg_tree_2d_t *list){
 	return root;
 }
 
+void empty_tree(seg_tree_2d_t *stree){
+	stree->rect_interval = NULL;
+	if (stree->right != NULL){
+		empty_tree(stree->left);
+		empty_tree(stree->right);
+	}
+}
 
 
 int main(){
