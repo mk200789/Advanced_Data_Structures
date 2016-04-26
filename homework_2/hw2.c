@@ -158,7 +158,21 @@ void check_tree(seg_tree_2d_t *tree, int depth, int lower, int upper){
 }
 
 rect_list_t *find_intervals(seg_tree_2d_t *tree, int query_key){
-	rect_list_t *result_list;
+	rect_list_t *result_list, *new_result, *current_list;
+	seg_tree_2d_t *current_node;
+
+	if(tree->left == NULL){
+		//empty tree
+		return NULL;
+	}
+	else{
+		current_node = tree;
+		result_list = NULL;
+		while(current_node->right != NULL){
+			
+		}
+	}
+
 	return result_list;
 }
 int main(){
