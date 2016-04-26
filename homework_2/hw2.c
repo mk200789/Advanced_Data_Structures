@@ -21,7 +21,7 @@ typedef struct seg_t_2d_t {
 	struct seg_t_2d_t *left;
 	struct seg_t_2d_t *right;
 	struct seg_t_2d_t *tree;
-	struct rect_list_t *rect_interval;
+	rect_list_t *rect_interval;
 }seg_tree_2d_t;
 
 seg_tree_2d_t *current_block = NULL;
@@ -157,6 +157,10 @@ void check_tree(seg_tree_2d_t *tree, int depth, int lower, int upper){
 	}
 }
 
+rect_list_t *get_list_node(){
+	return (rect_list_t *)get_node();
+}
+
 rect_list_t *find_intervals(seg_tree_2d_t *tree, int query_key){
 	rect_list_t *result_list, *new_result, *current_list;
 	seg_tree_2d_t *current_node;
@@ -169,7 +173,30 @@ rect_list_t *find_intervals(seg_tree_2d_t *tree, int query_key){
 		current_node = tree;
 		result_list = NULL;
 		while(current_node->right != NULL){
-			
+			if (query_key < current_node->key){
+				current_node = current_node->left;
+			}
+			else{
+				current_node = current_node->right;
+			}
+
+			current_list = current_node->rect_interval;
+
+			while (current_list != NULL){
+				//copy entry from node list to result list
+				new_result = get_list_node();
+				new_result->next = result_list;
+				
+				new_result->x_min = current_list->x_min;
+				new_result->x_max = current_list->x_max;
+
+				new_result->y_min = current_list->y_min;
+				new_result->y_max = current_list->y_max;
+
+				result_list = new_result;
+				
+				current_list = current_list->next;
+			}
 		}
 	}
 
