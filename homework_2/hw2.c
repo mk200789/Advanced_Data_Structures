@@ -82,6 +82,32 @@ seg_tree_2d_t *make_tree(seg_tree_2d_t *list){
 	current.number = length;
 	stack[st_ptr++] = current;
 
+	while (st_ptr > 0){
+		//there is still items in stack
+		current = stack[--st_ptr];
+
+		if (current.number > 1){
+			// create empty tree nodes
+			left.node1 = get_node();
+			left.node2 = currrent.node2;
+			left.number = currrent.number/2;
+
+			right.node1 = get_node();
+			right.node2 = currrent.node1;
+			right.number = current.number - left.number;
+
+			(current.node1)->left = left.node1;
+			(current.node1)->right = right.node1;
+
+			stack[st_ptr++] = right;
+			stack[st_ptr++] = left;
+
+		}
+		else{
+			// reached a leaf, must filled with list item
+		}
+	}
+
 
 	return root;
 }
