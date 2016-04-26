@@ -89,11 +89,11 @@ seg_tree_2d_t *make_tree(seg_tree_2d_t *list){
 		if (current.number > 1){
 			// create empty tree nodes
 			left.node1 = get_node();
-			left.node2 = currrent.node2;
-			left.number = currrent.number/2;
+			left.node2 = current.node2;
+			left.number = current.number/2;
 
 			right.node1 = get_node();
-			right.node2 = currrent.node1;
+			right.node2 = current.node1;
 			right.number = current.number - left.number;
 
 			(current.node1)->left = left.node1;
