@@ -105,10 +105,22 @@ seg_tree_2d_t *make_tree(seg_tree_2d_t *list){
 		}
 		else{
 			// reached a leaf, must filled with list item
+			//fill leaf from list
+			(current.node1)->left = list->left;
+			(current.node1)->key = list->key;
+
+			if (current.node2 != NULL){
+				//insert comparison key in the interrior node
+				(current.node2)->key = list->key;
+
+				//unlink first item from the list, content has been copied to leaf
+				//and return node
+				temp = list;
+				list = list->right;
+				return_node(temp);
+			}
 		}
 	}
-
-
 	return root;
 }
 
