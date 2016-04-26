@@ -132,6 +132,30 @@ void empty_tree(seg_tree_2d_t *stree){
 	}
 }
 
+void check_tree(seg_tree_2d_t *tree, int depth, int lower, int upper){
+	if (tree->left == NULL){
+		printf("Tree is empty.\n");
+		return;
+	}
+
+	if (tree->key < lower || tree->key >=upper){
+		printf("Wrong key order.\n");
+		return;
+	}
+
+	if (tree->right == NULL){
+		if ( *((int *)tree->left) == 42){
+			printf("%d(%d) ", tree->key, depth);
+		}
+		else{
+			printf("Wrong Object.\n");
+		}
+	}
+	else{
+		check_tree(tree->left, depth+1, lower, tree->key);
+		check_tree(tree->right, depth+1, tree->key, upper);
+	}
+}
 
 int main(){
 	return 0;
