@@ -194,7 +194,7 @@ rect_list_t *find_intervals(seg_tree_2d_t *tree, int query_key){
 				new_result->y_max = current_list->y_max;
 
 				result_list = new_result;
-				
+
 				current_list = current_list->next;
 			}
 		}
@@ -202,6 +202,31 @@ rect_list_t *find_intervals(seg_tree_2d_t *tree, int query_key){
 
 	return result_list;
 }
+
+
+void attach_intv_node(seg_tree_2d_t *tree, int xmin, int xmax, int ymin, int ymax){
+	rect_list_t *new_node;
+
+	new_node = get_list_node();
+
+	new_node->next = tree->rect_interval;
+
+	new_node->x_min = xmin;
+	new_node->x_max = xmax;
+	new_node->y_min = ymin;
+	new_node->y_max = ymax;
+
+	tree->rect_interval = new_node;
+
+}
+
+
+void insert_interval(seg_tree_2d_t *tree, int xmin, int xmax, int ymin, int ymax){
+	
+}
+
+
+
 int main(){
 	return 0;
 }
