@@ -222,7 +222,90 @@ void attach_intv_node(seg_tree_2d_t *tree, int xmin, int xmax, int ymin, int yma
 
 
 void insert_interval(seg_tree_2d_t *tree, int xmin, int xmax, int ymin, int ymax){
-	
+	seg_tree_2d_t *current_node, *right_path, *left_path;
+	rect_list_t *current_list, *new_node;
+
+	if (tree->left == NULL){
+		//tree is incorrect
+		exit(-1);
+	}
+	else{
+		current_node = tree;
+		right_path = left_path = NULL;
+
+		while(current_node->right != NULL){
+			//current node is not a leaf
+
+			if (xmax < current_node->key){
+				//go left
+				current_node = current_node->left;
+			}
+			else if (current_node->key < xmin){
+				//go right
+				current_node = current_node->right;
+			}
+			else if (xmin < current_node->key && current_node->key < xmax){
+				//split, going both left and right path
+				right_path = current_node->right;
+				left_path = current_node->left;
+				break;
+			}
+			else if (xmin == current_node->key){
+				//set right_path only, no left
+				right_path = current_node->right;
+				break;
+			}
+			else{
+				//set left_path only, no right
+				left_path = current_node->left;
+				break;
+			}
+
+		}
+
+		if (left_path != NULL){
+			//there's  left path
+			while (left_path->right != NULL){
+				//follow the path of the left endpoint  xmin
+				if (xmin < left_path->key){
+					//right node must be selected
+					attach_intv_node(left_path->right, xmin, xmax, ymin, ymax);
+					left_path = left_path->left;
+				}
+				else if (xmin == left_path->key){
+					attach_intv_node(left_path->right, xmin, xmax, ymin, ymax);
+					//no further descent necessary
+					break; 
+				}
+				else{
+					//go right, no node selected
+					left_path = left_path->right;
+				}
+			}
+
+			/* left leaf needs to be selected  if reached in descent */
+			if (left_path->right == NULL && left_path->key == xmin){
+				attach_intv_node(left_path, xmin, xmax, ymin, ymax);
+			}
+		}
+
+		if (right_path != NULL){
+			while (right_path->right != NULL){
+				if (right_path->key < xmax){
+					//left node must be selected
+					attach_intv_node(right_path->left, xmin, xmax, ymin, ymax);
+					right_path = right_path->right;
+				}
+				else if (right_path->key == xmax){
+					attach_intv_node(right_path->left, xmin, xmax, ymin, ymax);
+					break;
+				}
+				else{
+					right_path = right_path->left;
+				}
+			}
+		}
+	}
 }
 
 
