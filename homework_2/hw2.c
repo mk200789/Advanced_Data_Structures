@@ -313,6 +313,12 @@ int compint(int *a, int *b){
 }
 
 
+seg_tree_2d_t *create_seg_tree_2d(rect_list_t *list){
+	seg_tree_2d_t *current_list;
+	
+	return current_list;
+}
+
 int main(){
 	return 0;
 }
