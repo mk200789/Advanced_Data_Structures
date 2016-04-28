@@ -312,11 +312,16 @@ int compint(int *a, int *b){
 	return *a>*b;
 }
 
+rect_list_t * query_seg_tree_2d(seg_tree_2d_t *tree, int x, int y){
+	rect_list_t *temp;
 
+	return temp;
+
+}
 seg_tree_2d_t *create_seg_tree_2d(rect_list_t *list){
-	seg_tree_2d_t *current_list;
-	
-	return current_list;
+	seg_tree_2d_t *temp;
+
+	return temp;
 }
 
 int main(){
