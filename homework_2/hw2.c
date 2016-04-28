@@ -308,6 +308,9 @@ void insert_interval(seg_tree_2d_t *tree, int xmin, int xmax, int ymin, int ymax
 	}
 }
 
+int compint(int *a, int *b){
+	return *a>*b;
+}
 
 
 int main(){
