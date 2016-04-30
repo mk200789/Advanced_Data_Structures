@@ -313,17 +313,106 @@ int compint(int *a, int *b){
 }
 
 rect_list_t * query_seg_tree_2d(seg_tree_2d_t *tree, int x, int y){
-	rect_list_t *temp;
+	seg_tree_2d_t *current_node;
+	rect_list_t *result_list, *current_list, *new_result;
 
-	return temp;
+	if (tree->left == NULL){
+		//empty tree
+		printf("Empty tree.\n");
+		return NULL;
+	}
+	else{
+		current_node = tree;
+		while (current_node->right != NULL){
+			if (x < current_node->key){
+				//go left of current tree
+				current_node = current_node->left;
+			}
+			else{
+				current_node = current_node->right;
+			}
+
+			current_list = current_node->rect_interval;
+
+			if (current_list != NULL){
+				//if current_list not empty search current_node->tree for y
+				current_list = find_intervals(current_node->tree, y);
+
+				while(current_list != NULL){
+					//going through and copying current_list to new_list
+					new_result = get_list_node();
+
+					new_result->next = result_list;
+
+					//updating x_min, y_min, x_max, and y_max values
+					new_result->x_min = current_list->x_min;
+					new_result->x_max = current_list->x_max;
+					new_result->y_min = current_list->y_min;
+					new_result->y_max = current_list->y_max;
+
+					//set new_result to result_list
+					result_list = new_result;
+					//updating to next in list
+					current_list = current_list->next;
+				}
+			}
+		}
+	}
+	return result_list;
 
 }
 seg_tree_2d_t *create_seg_tree_2d(rect_list_t *list){
-	seg_tree_2d_t *temp;
+	seg_tree_2d_t *temp, *rect_to_tree_list, *temp_list;
+
+	//convert rectangle list to tree list: x segment tree
+
 
 	return temp;
 }
 
 int main(){
+	int i, j, x, y, l,m; 
+	rect_list_t rectangles[50000];
+	rect_list_t * tmp;
+	seg_tree_2d_t *tr;
+	for( i=0; i<50000; i++)
+	{
+		rectangles[(17*i)%50000 ].next = rectangles + ((17*(i+1))%50000);  
+	}
+
+	rectangles[(17*49999)%50000 ].next = NULL;
+	i=0; tmp = rectangles;
+	while(tmp->next != NULL ){  
+		tmp = tmp->next; i+=1; 
+	}
+	printf("List of %d rectangles\n",i);
+
+	for(i=0; i<12500; i++){  
+		rectangles[i].x_min = 500000 + 40*i;
+		rectangles[i].x_max = 500000 + 40*i + 20;
+		rectangles[i].y_min = 0;
+		rectangles[i].y_max = 1000000;
+	}
+	for(i=12500; i<25000; i++){  
+		rectangles[i].x_min = 500000 + 40*(i-12500) + 10;
+		rectangles[i].x_max = 500000 + 40*(i-12500) + 20;
+		rectangles[i].y_min = 0;
+		rectangles[i].y_max = 1000000;
+	}
+	for(i=25000; i<37500; i++){  
+		rectangles[i].x_min = 20*(i-25000);
+		rectangles[i].x_max = 20*(i-25000) + 250000;
+		rectangles[i].y_min = 20*(i-25000);
+		rectangles[i].y_max = 20*(i-25000) + 250000;
+	}
+	for(i=37500; i<50000; i++){  
+		rectangles[i].x_min = 40*(i-37500);
+		rectangles[i].x_max = 500000;
+		rectangles[i].y_min = 300000;
+		rectangles[i].y_max = 500000 + 40*(i-37500);
+	}
+
+	printf("Defined the 50000 rectangles\n"); fflush(stdout);
+	//tr = create_seg_tree_2d( rectangles );
 	return 0;
 }
