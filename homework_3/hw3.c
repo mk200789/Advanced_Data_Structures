@@ -43,7 +43,6 @@ o_t *get_node(){
 	return tmp;
 }
 
-
 void return_node(o_t *node){
 	node->left = free_list;
 	free_list = node;
@@ -98,6 +97,33 @@ o_t *create_order(){
 	temp1->previous = temp2;
 
 	return temp1;
+}
+
+int *find(o_t *tree, int key){
+	o_t *temp_node;
+	//find key in tree
+	if (tree->left == NULL){
+		//empty tree
+		return NULL;
+	}
+	else{
+		temp_node = tree;
+		while(temp_node->right != NULL){
+			if (key < temp_node->key){
+				temp_node = temp_node->left;
+			}
+			else{
+				temp_node = temp_node->right;
+			}
+		}
+
+		if (temp_node->key == key){
+			return ( (int *)temp_node->left);
+		}
+		else{
+			return NULL;
+		}
+	}
 }
 
 int main(){
