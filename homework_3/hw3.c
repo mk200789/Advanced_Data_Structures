@@ -17,6 +17,7 @@ typedef struct tr_n_t{
 	int key;
 	struct tr_n_t *left;
 	struct tr_n_t *right;
+	struct tr_n_t *previous;
 	int height;
 }o_t;
 
@@ -82,6 +83,21 @@ void left_rotation(o_t *n){
 	
 	n->left->left  = temp_node;
 	n->left->key   = temp_key;
+}
+
+o_t *create_order(){
+	//creates an empty linear ordered set
+	o_t *temp1, *temp2;
+	temp1 = get_node();
+	temp2 = get_node();
+
+	temp2->left = NULL;
+	temp2->key = 0;
+
+	temp1->left = NULL;
+	temp1->previous = temp2;
+
+	return temp1;
 }
 
 int main(){
