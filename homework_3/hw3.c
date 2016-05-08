@@ -126,6 +126,69 @@ int *find(o_t *tree, int key){
 	}
 }
 
+
+void left_rotation1(o_t *n){
+	o_t *temp_node;
+	o_t *temp_previous;
+
+	temp_node = n->left;
+	temp_previous = n->previous;
+
+	n->left = n->right;
+	n->key  = 0;
+
+	n->right = n->left->right;
+
+	n->left->right = n->left->left;
+	
+	n->left->left  = temp_node;
+	n->left->key   = 0;
+
+	n->previous = temp_previous;
+	n->left->previous = n;
+	n->right->previous = n;
+	n->left->left->previous = n->left;
+	n->left->right->previous = n->left;
+}
+
+void right_rotation1(o_t *n){
+	o_t *temp_node;
+	o_t *temp_previous;
+
+	temp_node = n->right;
+	temp_previous = 0;
+
+	n->right = n->left;
+	n->key = n->left->key;
+
+	n->left = n->right->left;
+
+	n->right->left = n->right->right;
+
+	n->right->right = temp_node;
+	n->right->key = 0;
+
+	n->previous = temp_previous;
+	n->left->previous = n;
+	n->right->previous = n;
+	n->right->left->previous = n->right;
+	n->right->right->previous = n->left;
+}
+
+
+
+long p(long q)
+{ return( (1247*q +104729) % 300007 );
+}
+
 int main(){
+	long i; o_t *o; 
+	printf("starting \n");
+	o = create_order();
+	/*
+	for(i=100000; i>=0; i-- )
+		insert_bottom( o, p(i) );
+	printf("Done loop1\n");
+	*/
 	return 0;
 }
