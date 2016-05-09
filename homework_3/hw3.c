@@ -177,6 +177,30 @@ void right_rotation1(o_t *n){
 
 void insert_bottom (o_t *ord, int a){
 	//inserts the key a as smallest element in the ordered set
+	o_t *temp, *root1, *root2;
+
+	root1 = ord;
+	root2 = ord;
+
+
+	//going backwards with the second tree
+	while(root2->right != NULL){
+		root2 = root2->right;
+	}
+	root2 = root2->previous;
+
+	while(root2->previous != NULL){
+		root2 = root2->previous;
+	}
+
+
+	if (root1->left == NULL){
+		//first tree is empty tree
+	}
+	else{
+
+	}
+
 }
 
 
