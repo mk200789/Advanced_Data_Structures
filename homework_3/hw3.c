@@ -175,6 +175,10 @@ void right_rotation1(o_t *n){
 	n->right->right->previous = n->left;
 }
 
+void insert_bottom (o_t *ord, int a){
+	//inserts the key a as smallest element in the ordered set
+}
+
 
 
 long p(long q)
