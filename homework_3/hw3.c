@@ -408,6 +408,14 @@ void insert_bottom (o_t *ord, int a){
 
 }
 
+void insert_after(o_t *ord, int a, int b){
+	//inserts key a immediately after key b in the ordered set
+	if (ord->left == NULL){
+		//empty tree
+		return;
+	}
+
+}
 
 
 long p(long q)
