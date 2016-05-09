@@ -175,13 +175,13 @@ void right_rotation1(o_t *n){
 	n->right->right->previous = n->left;
 }
 
+
 void insert_bottom (o_t *ord, int a){
 	//inserts the key a as smallest element in the ordered set
 	o_t *temp, *root1, *root2;
 
 	root1 = ord;
 	root2 = ord;
-
 
 	//going backwards with the second tree
 	while(root2->right != NULL){
@@ -195,9 +195,214 @@ void insert_bottom (o_t *ord, int a){
 
 
 	if (root1->left == NULL){
-		//first tree is empty tree
+		//first tree is empty tree: insert into the second tree first, then the first tree.
+		root2->left = (o_t *) (int *)malloc(sizeof(int));
+		root2->right = NULL;
+		root2->key = 0;
+		root2->height = 0;
+
+		root1->left = (o_t *) (int *)malloc(sizeof(int));
+		root1->right = NULL;
+		root1->key = a;
+		root1->height = 0;
+
+		root1->previous = root2;
 	}
 	else{
+		if (find(ord, a) != NULL){
+			//if a exist, return
+			return;
+		}
+
+		o_t *stack1[100], *stack2[100];
+		int stack_ptr1 = 0, stack_ptr2 =0;
+
+		o_t *old_leaf2, *new_leaf2, *old_leaf1, *new_leaf1;
+
+		temp = root2;
+		while(temp->right != NULL){
+			stack2[stack_ptr2++] = temp;
+			temp = temp->right;
+		}
+
+		//first: insert second tree
+		old_leaf2 = get_node();
+		old_leaf2->left = temp->left;
+		old_leaf2->right = NULL;
+		old_leaf2->key = 0;
+		old_leaf2->height = 0;
+
+		new_leaf2 = get_node();
+		new_leaf2->left = (o_t *) (int *)malloc(sizeof(int));
+		new_leaf2->right = NULL;
+		new_leaf2->key = 0;
+		new_leaf2->height = 0;
+
+		temp->left = old_leaf2;
+		temp->right = new_leaf2;
+		old_leaf2->previous = temp;
+		new_leaf2->previous = temp;
+		temp->height = 1;
+
+
+		//second: find insert position in the first tree
+		temp = root1;
+		while(temp->right != NULL){
+			stack1[stack_ptr1++] = temp;
+			if (a < temp->key){
+				temp = temp->left;
+			}
+			else{
+				temp = temp->right;
+			}
+		}
+
+		//third: insert first tree
+		old_leaf1 = get_node();
+		old_leaf1->left = temp->left;
+		old_leaf1->right = NULL;
+		old_leaf1->key = temp->key;
+		old_leaf1->height = 0;
+
+		new_leaf1 = get_node();
+		new_leaf1->left = (o_t *) (int *)malloc(sizeof(int));
+		new_leaf1->right = NULL;
+		new_leaf1->key = a;
+		new_leaf1->height = 0;
+
+		if (temp->key < a){
+			temp->left = old_leaf1;
+			temp->right = new_leaf1;
+			temp->key = a;
+		}
+		else{
+			temp->left = new_leaf1;
+			temp->right = old_leaf1;
+		}
+
+		temp->height = 1;
+
+		//connect the two trees
+		old_leaf1->previous = old_leaf2;
+		new_leaf1->previous = new_leaf2;
+		temp->previous = NULL;
+
+
+
+		//rebalance first tree
+		int finished = 0;
+		while (stack_ptr1 > 0 && !finished){
+			int temp_height , old_height;
+			temp = stack1[--stack_ptr1];
+			old_height = temp->height;
+
+			if(temp->left->height - temp->right->height == 2){
+
+				if (temp->left->left->height - temp->right->height == 1){
+					right_rotation(temp);
+					temp->right->height = temp->right->left->height + 1;
+					temp->height = temp->right->height + 1;
+				}
+				else{
+					left_rotation(temp->left);
+					right_rotation(temp);
+					temp_height = temp->left->left->height;
+					temp->left->height = temp_height + 1;
+					temp->right->height = temp_height + 1;
+					temp->height = temp_height + 2;
+				}
+
+			}
+			else if (temp->left->height - temp->right->height == -2){
+
+				if (temp->right->right->height - temp->left->height == 1){
+					left_rotation(temp);
+					temp->left->height = temp->left->right->height + 1;
+					temp->height = temp->left->height + 1;
+				}
+				else{
+					right_rotation(temp->right);
+					left_rotation(temp);
+					temp_height = temp->right->right->height;
+					temp->left->height = temp_height + 1;
+					temp->right->height = temp_height + 1;
+					temp->height = temp_height + 2;
+				}
+
+			}
+			else{
+				//if no rotation needed, update height
+				if (temp->left->height > temp->right->height){
+					temp->height = temp->left->height + 1;
+				}
+				else{
+					temp->height = temp->right->height + 1;
+				}
+
+			}
+
+			if (temp->height == old_height){
+				finished = 1;
+			}
+		}
+
+
+		//rebalance second tree
+		finished = 0;
+		while (stack_ptr2 > 0 && !finished){
+			int temp_height , old_height;
+			temp = stack2[--stack_ptr2];
+			old_height = temp->height;
+
+			if(temp->left->height - temp->right->height == 2){
+
+				if (temp->left->left->height - temp->right->height == 1){
+					right_rotation1(temp);
+					temp->right->height = temp->right->left->height + 1;
+					temp->height = temp->right->height + 1;
+				}
+				else{
+					left_rotation1(temp->left);
+					right_rotation1(temp);
+					temp_height = temp->left->left->height;
+					temp->left->height = temp_height + 1;
+					temp->right->height = temp_height + 1;
+					temp->height = temp_height + 2;
+				}
+
+			}
+			else if (temp->left->height - temp->right->height == -2){
+
+				if (temp->right->right->height - temp->left->height == 1){
+					left_rotation1(temp);
+					temp->left->height = temp->left->right->height + 1;
+					temp->height = temp->left->height + 1;
+				}
+				else{
+					right_rotation1(temp->right);
+					left_rotation1(temp);
+					temp_height = temp->right->right->height;
+					temp->left->height = temp_height + 1;
+					temp->right->height = temp_height + 1;
+					temp->height = temp_height + 2;
+				}
+
+			}
+			else{
+				//if no rotation needed, update height
+				if (temp->left->height > temp->right->height){
+					temp->height = temp->left->height + 1;
+				}
+				else{
+					temp->height = temp->right->height + 1;
+				}
+
+			}
+
+			if (temp->height == old_height){
+				finished = 1;
+			}
+		}
 
 	}
 
@@ -213,10 +418,10 @@ int main(){
 	long i; o_t *o; 
 	printf("starting \n");
 	o = create_order();
-	/*
+	
 	for(i=100000; i>=0; i-- )
 		insert_bottom( o, p(i) );
 	printf("Done loop1\n");
-	*/
+	
 	return 0;
 }
