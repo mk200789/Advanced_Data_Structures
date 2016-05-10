@@ -883,6 +883,10 @@ void insert_before(o_t *ord, int a, int b){
 
 }
 
+void delete_o (o_t *ord, int a){
+	//deletes the key a from the ordered set
+}
+
 
 
 
@@ -906,7 +910,16 @@ int main(){
 		insert_before( o, p(i), p(i+1) );
 		printf("%ld, %ld\n", i, p(i+1));
 	}
+	printf("inserted 300000 elements. \n");
 	printf("Done loop2\n");
+
+	/*
+	for(i = 250000; i < 300007; i++ ){
+		delete_o( o, p(i) );
+	}
+	printf("deleted 50000 elements. \n");
+	printf("Done loop3\n");
+	*/
 	
 	return 0;
 }
