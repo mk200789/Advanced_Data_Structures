@@ -25,6 +25,12 @@ typedef struct seg_t_2d_t {
 	rect_list_t *rect_interval;
 }seg_tree_2d_t;
 
+typedef struct { 
+	struct seg_t_2d_t *node1;
+	struct seg_t_2d_t *node2;
+	int number;
+} stack_item;
+
 typedef struct rec_intv{
 	int x_min; int x_max; 
 	int y_min; int y_max;
@@ -33,9 +39,12 @@ typedef struct rec_intv{
 intervals rect_x_interval[STACKSIZE]; //stores x rectangles intervals
 intervals rect_y_interval[STACKSIZE]; //stores y rectangles intervals
 
+
 seg_tree_2d_t *current_block = NULL;
 seg_tree_2d_t *free_list = NULL;
 int size_left;
+
+int rec_number_x, rec_number_y;
 
 
 seg_tree_2d_t *get_node(){
@@ -58,20 +67,20 @@ seg_tree_2d_t *get_node(){
 	
 }
 
+
 void return_node(seg_tree_2d_t *node){  
 	node->left = free_list;
 	free_list = node;
 }
 
+
 seg_tree_2d_t *make_tree(seg_tree_2d_t *list){
 	//make a 2d segment tree
 	seg_tree_2d_t *temp, *root;
 
-	typedef struct { struct seg_t_2d_t *node1;
-					 struct seg_t_2d_t *node2;
-					 int number;} st_item;
-	st_item current, left, right;
-	st_item stack[STACKSIZE];
+
+	stack_item current, left, right;
+	stack_item stack[1000];
 	int st_ptr = 0;
 
 	//use to keep track the length of the list
@@ -116,22 +125,24 @@ seg_tree_2d_t *make_tree(seg_tree_2d_t *list){
 			// reached a leaf, must filled with list item
 			//fill leaf from list
 			(current.node1)->left = list->left;
+			(current.node1)->right = NULL;
 			(current.node1)->key = list->key;
 
 			if (current.node2 != NULL){
 				//insert comparison key in the interrior node
 				(current.node2)->key = list->key;
-
-				//unlink first item from the list, content has been copied to leaf
-				//and return node
-				temp = list;
-				list = list->right;
-				return_node(temp);
 			}
+
+			//unlink first item from the list, content has been copied to leaf
+			//and return node
+			temp = list;
+			list = list->right;
+			return_node(temp);
 		}
 	}
 	return root;
 }
+
 
 void empty_tree(seg_tree_2d_t *stree){
 	stree->rect_interval = NULL;
@@ -140,6 +151,7 @@ void empty_tree(seg_tree_2d_t *stree){
 		empty_tree(stree->right);
 	}
 }
+
 
 void check_tree(seg_tree_2d_t *tree, int depth, int lower, int upper){
 	if (tree->left == NULL){
@@ -166,21 +178,27 @@ void check_tree(seg_tree_2d_t *tree, int depth, int lower, int upper){
 	}
 }
 
+
 rect_list_t *get_list_node(){
 	return (rect_list_t *)get_node();
 }
 
+
 rect_list_t *find_intervals(seg_tree_2d_t *tree, int query_key){
 	rect_list_t *result_list, *new_result, *current_list;
 	seg_tree_2d_t *current_node;
-
-	if(tree->left == NULL){
+	
+	if (tree == NULL){
+		return NULL;
+	}
+	else if(tree->left == NULL){
 		//empty tree
 		return NULL;
 	}
 	else{
 		current_node = tree;
 		result_list = NULL;
+
 		while(current_node->right != NULL){
 			if (query_key < current_node->key){
 				current_node = current_node->left;
@@ -234,14 +252,14 @@ void insert_interval(seg_tree_2d_t *tree, int xmin, int xmax, int ymin, int ymax
 	seg_tree_2d_t *current_node, *right_path, *left_path;
 	rect_list_t *current_list, *new_node;
 
-	printf("INSERT_INTERVAL()\n");
+	//printf("INSERT_INTERVAL()\n");
 	if (tree->left == NULL){
 		//tree is incorrect
-		printf("EMPTY TREE\n");
+		//printf("EMPTY TREE\n");
 		exit(-1);
 	}
 	else{
-		printf("NOT EMPTY TREE\n");
+		//printf("NOT EMPTY TREE\n");
 		current_node = tree;
 		right_path = left_path = NULL;
 
@@ -276,7 +294,7 @@ void insert_interval(seg_tree_2d_t *tree, int xmin, int xmax, int ymin, int ymax
 
 		}
 
-		printf("AFTER WHILE LOOP1\n");
+		//printf("AFTER WHILE LOOP1\n");
 
 		if (left_path != NULL){
 			//there's  left path
@@ -304,7 +322,7 @@ void insert_interval(seg_tree_2d_t *tree, int xmin, int xmax, int ymin, int ymax
 			}
 		}
 
-		printf("AFTER LEFT_PATH IF\n");
+		//printf("AFTER LEFT_PATH IF\n");
 
 		if (right_path != NULL){
 			while (right_path->right != NULL){
@@ -322,7 +340,7 @@ void insert_interval(seg_tree_2d_t *tree, int xmin, int xmax, int ymin, int ymax
 				}
 			}
 		}
-		printf("AFTER RIGHT_PATH IF\n");
+		//printf("AFTER RIGHT_PATH IF\n");
 	}
 }
 
@@ -332,24 +350,28 @@ int compint(int *a, int *b){
 	return *a>*b;
 }*/
 
-int compint( const void *a_, const void *b_)
-{ 
-  int a = *(int*) a_;
-  int b = *(int*) b_;
-  return( a>b );
+int compint( const void *a_, const void *b_){ 
+	int a = *(int*) a_;
+	int b = *(int*) b_;
+	return( a>b );
 }
+
 
 rect_list_t * query_seg_tree_2d(seg_tree_2d_t *tree, int x, int y){
 	seg_tree_2d_t *current_node;
 	rect_list_t *result_list, *current_list, *new_result;
 
-	if (tree->left == NULL){
+	if (tree == NULL){
+		return NULL;
+	}
+	else if (tree->left == NULL){
 		//empty tree
-		printf("Empty tree.\n");
 		return NULL;
 	}
 	else{
 		current_node = tree;
+		result_list = NULL;
+
 		while (current_node->right != NULL){
 			if (x < current_node->key){
 				//go left of current tree
@@ -359,78 +381,80 @@ rect_list_t * query_seg_tree_2d(seg_tree_2d_t *tree, int x, int y){
 				current_node = current_node->right;
 			}
 
-			current_list = current_node->rect_interval;
+			current_list  = find_intervals( current_node->tree, y);
 
-			if (current_list != NULL){
-				//if current_list not empty search current_node->tree for y
-				current_list = find_intervals(current_node->tree, y);
+			while(current_list != NULL){
+				//going through and copying current_list to new_list
+				new_result = get_list_node();
 
-				while(current_list != NULL){
-					//going through and copying current_list to new_list
-					new_result = get_list_node();
+				new_result->next = result_list;
 
-					new_result->next = result_list;
+				//updating x_min, y_min, x_max, and y_max values
+				new_result->x_min = current_list->y_min;
+				new_result->x_max = current_list->y_max;
+				new_result->y_min = current_list->x_min;
+				new_result->y_max = current_list->x_max;
 
-					//updating x_min, y_min, x_max, and y_max values
-					new_result->x_min = current_list->x_min;
-					new_result->x_max = current_list->x_max;
-					new_result->y_min = current_list->y_min;
-					new_result->y_max = current_list->y_max;
-
-					//set new_result to result_list
-					result_list = new_result;
-					//updating to next in list
-					current_list = current_list->next;
-				}
+				//set new_result to result_list
+				result_list = new_result;
+				//updating to next in list
+				current_list = current_list->next;
 			}
+
 		}
 	}
 	return result_list;
 
 }
 
+
 seg_tree_2d_t *build_x_segment_tree(rect_list_t * rect_list){
 	//build x segment tree
 	rect_list_t *temp_list;
 	seg_tree_2d_t *list;
 
-	int keys[STACKSIZE];
-	int rec_number = 0;
-	int j, prev_key;
+	int keys[1000000];
+	//int rec_number = 0;
+	//rec_number = 0;
+	int j, prev_key,  i = 0;
 
 	temp_list = rect_list;
 
 	//build x segment tree
 	while(temp_list != NULL){
-		keys[2*rec_number] = temp_list->x_min;
-		keys[2*rec_number+1] = temp_list->x_max;
+		keys[2*i] = temp_list->x_min;
+		keys[2*i+1] = temp_list->x_max;
 
-		rect_x_interval[rec_number].x_min = temp_list->x_min;
-		rect_x_interval[rec_number].x_max = temp_list->x_max;
-		rect_x_interval[rec_number].y_min = temp_list->y_min;
-		rect_x_interval[rec_number++].y_max = temp_list->y_max;
+		rect_x_interval[i].x_min = temp_list->x_min;
+		rect_x_interval[i].x_max = temp_list->x_max;
+		rect_x_interval[i].y_min = temp_list->y_min;
+		rect_x_interval[i].y_max = temp_list->y_max;
 		temp_list = temp_list->next;
+		i++;
 	}
 
-	qsort(keys, 2*rec_number, sizeof(int), compint);
+	rec_number_x = i;
+	printf("ix=%d, %d\n", rec_number_x, i);
+
+	qsort(keys, 2*i, sizeof(int), compint);
 	
 	seg_tree_2d_t *tmp;
 	int *m;
 
 	list = get_node();
 	list->right = NULL;
-	prev_key = list->key = keys[2*rec_number-1];
+	prev_key = list->key = keys[2*i-1];
 	m = (int *) malloc(sizeof(int));
 	*m = 42;
 	list->left = (seg_tree_2d_t *) m;
 
 	
-	for (j=2*rec_number-2; j>=0; j--){
-		if (keys[j] != prev_key)		{
+	for (j=2*i-2; j>=0; j--){
+		if (keys[j] != prev_key){
 			tmp = get_node();
 			prev_key = tmp->key = keys[j];
 			tmp->right = list;
-			tmp->left = (seg_tree_2d_t *) 42;
+			tmp->left = (seg_tree_2d_t *) m;
 			list = tmp;
 		}
 	}
@@ -438,7 +462,7 @@ seg_tree_2d_t *build_x_segment_tree(rect_list_t * rect_list){
 	tmp = get_node();
 	tmp->key = -1000;
 	tmp->right = list;
-	tmp->left = (seg_tree_2d_t *) 42;
+	tmp->left = (seg_tree_2d_t *) m;
 	list = tmp;
 
 	tmp = list;
@@ -461,36 +485,40 @@ int main(){
 	rect_list_t rectangles[50000];
 	rect_list_t * tmp;
 	seg_tree_2d_t *tr;
-	for( i=0; i<50000; i++)
-	{
+	
+	for( i=0; i<50000; i++){  
 		rectangles[(17*i)%50000 ].next = rectangles + ((17*(i+1))%50000);  
 	}
-
 	rectangles[(17*49999)%50000 ].next = NULL;
 	i=0; tmp = rectangles;
+
 	while(tmp->next != NULL ){  
 		tmp = tmp->next; i+=1; 
 	}
+
 	printf("List of %d rectangles\n",i);
 
 	for(i=0; i<12500; i++){  
 		rectangles[i].x_min = 500000 + 40*i;
 		rectangles[i].x_max = 500000 + 40*i + 20;
 		rectangles[i].y_min = 0;
-		rectangles[i].y_max = STACKSIZE;
+		rectangles[i].y_max = 1000000;
 	}
+
 	for(i=12500; i<25000; i++){  
 		rectangles[i].x_min = 500000 + 40*(i-12500) + 10;
 		rectangles[i].x_max = 500000 + 40*(i-12500) + 20;
 		rectangles[i].y_min = 0;
-		rectangles[i].y_max = STACKSIZE;
+		rectangles[i].y_max = 1000000;
 	}
+
 	for(i=25000; i<37500; i++){  
 		rectangles[i].x_min = 20*(i-25000);
 		rectangles[i].x_max = 20*(i-25000) + 250000;
 		rectangles[i].y_min = 20*(i-25000);
 		rectangles[i].y_max = 20*(i-25000) + 250000;
 	}
+
 	for(i=37500; i<50000; i++){  
 		rectangles[i].x_min = 40*(i-37500);
 		rectangles[i].x_max = 500000;
@@ -500,6 +528,8 @@ int main(){
 
 	printf("Defined the 50000 rectangles\n"); fflush(stdout);
 	tr = create_seg_tree_2d( rectangles );
-	printf("ldjssj\n");
+	printf("Created 2d segment tree\n"); fflush(stdout);
+/* test 1 */
+	
 	return 0;
 }
