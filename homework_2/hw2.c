@@ -410,6 +410,75 @@ rect_list_t * query_seg_tree_2d(seg_tree_2d_t *tree, int x, int y){
 
 
 //int rec_number = 0, rec_number_y = 0;
+
+seg_tree_2d_t *build_y_segment_tree(rect_list_t * rect_list){
+	//build y segment tree
+	rect_list_t *temp_list;
+	seg_tree_2d_t *list;
+
+	int keys[1000000];
+	//int rec_number = 0;
+	//rec_number = 0;
+	int j, k, prev_key, i = 0;
+
+	temp_list = rect_list;
+
+	//initialize rect_y_intervals to 0
+	for (k=0; k<rec_number_y; k++){
+		rect_y_interval[k].x_min = rect_y_interval[k].x_max = 0;
+		rect_y_interval[k].y_min = rect_y_interval[k].y_max = 0;
+	}
+
+	while(temp_list != NULL){
+		printf("lajaja %d\n", i);
+		keys[2*i] = temp_list->y_min;
+		keys[2*i+1] = temp_list->y_max;
+
+		rect_y_interval[i].x_min = temp_list->y_min;
+		rect_y_interval[i].x_max = temp_list->y_max;
+		rect_y_interval[i].y_min = temp_list->x_min;
+		rect_y_interval[i].y_max = temp_list->x_max;
+		temp_list = temp_list->next;
+		i++;
+	}
+
+	rec_number_y = i;
+	printf("iy=%d, %d\n", rec_number_y, i);
+
+	qsort(keys, 2*i, sizeof(int), compint);
+
+	seg_tree_2d_t *tmp;
+	int *m;
+
+	list = get_node();
+	list->right = NULL;
+	prev_key = list->key = keys[2*i-1];
+	m = (int *) malloc(sizeof(int));
+	*m = 42;
+	list->left = (seg_tree_2d_t *) m;
+
+	
+	for (j=2*i-2; j>=0; j--){
+		if (keys[j] != prev_key){
+			tmp = get_node();
+			prev_key = tmp->key = keys[j];
+			tmp->right = list;
+			tmp->left = (seg_tree_2d_t *) m;
+			list = tmp;
+		}
+	}
+
+	tmp = get_node();
+	tmp->key = -1000;
+	tmp->right = list;
+	tmp->left = (seg_tree_2d_t *) m;
+	list = tmp;
+
+	tmp = list;
+
+	return list;
+}
+
 seg_tree_2d_t *build_x_segment_tree(rect_list_t * rect_list){
 	//build x segment tree
 	rect_list_t *temp_list;
@@ -482,6 +551,42 @@ seg_tree_2d_t *create_seg_tree_2d(rect_list_t *list){
 
 	//build x segment tree
 	x_list = build_x_segment_tree(list);
+
+	//make seg tree
+	seg_tree = make_tree(x_list);
+
+	empty_tree(seg_tree);
+
+	for (i = rec_number_x-1; i>= 0; i--){
+		insert_interval(seg_tree, rect_x_interval[i].x_min, rect_x_interval[i].x_max, rect_x_interval[i].y_min, rect_x_interval[i].y_max );
+	}
+	
+	stack[stack_ptr++] = seg_tree;
+
+	while(stack_ptr > 0){
+		printf("stack_ptr: %d\n", stack_ptr);
+		
+		
+		temp_node = stack[--stack_ptr];
+
+		if (temp_node->rect_interval != NULL){
+			//build y segment tree
+			current_list = temp_node->rect_interval;
+			y_list = build_y_segment_tree(current_list);
+			temp_node->tree = make_tree(y_list);
+			empty_tree(temp_node->tree);
+			
+
+			for(i=rec_number_y-1; i>=0; i--){
+				insert_interval(temp_node->tree, rect_y_interval[i].x_min, rect_y_interval[i].x_max, rect_y_interval[i].y_min, rect_y_interval[i].y_max );
+			}
+		}
+
+		if (temp_node->right != NULL){
+			stack[stack_ptr++] = temp_node->left;
+			stack[stack_ptr++] = temp_node->right;
+		}
+	}
 
 
 	return seg_tree;
