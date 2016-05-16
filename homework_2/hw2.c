@@ -225,9 +225,8 @@ rect_list_t *find_intervals(seg_tree_2d_t *tree, int query_key){
 				current_list = current_list->next;
 			}
 		}
+		return result_list;
 	}
-
-	return result_list;
 }
 
 
@@ -350,11 +349,13 @@ int compint(int *a, int *b){
 	return *a>*b;
 }*/
 
+
 int compint( const void *a_, const void *b_){ 
 	int a = *(int*) a_;
 	int b = *(int*) b_;
-	return( a>b );
+	return (a-b);
 }
+
 
 
 rect_list_t * query_seg_tree_2d(seg_tree_2d_t *tree, int x, int y){
@@ -402,12 +403,13 @@ rect_list_t * query_seg_tree_2d(seg_tree_2d_t *tree, int x, int y){
 			}
 
 		}
+		return result_list;
 	}
-	return result_list;
 
 }
 
 
+//int rec_number = 0, rec_number_y = 0;
 seg_tree_2d_t *build_x_segment_tree(rect_list_t * rect_list){
 	//build x segment tree
 	rect_list_t *temp_list;
@@ -472,12 +474,17 @@ seg_tree_2d_t *build_x_segment_tree(rect_list_t * rect_list){
 
 
 seg_tree_2d_t *create_seg_tree_2d(rect_list_t *list){
-	seg_tree_2d_t *x_list, *y_list;
-	printf("hey there\n");
 
+	seg_tree_2d_t *x_list, *y_list, *seg_tree, *temp_node;
+	seg_tree_2d_t *stack[1000];
+	rect_list_t *current_list;
+	int i, stack_ptr = 0;
+
+	//build x segment tree
 	x_list = build_x_segment_tree(list);
 
-	return y_list;
+
+	return seg_tree;
 }
 
 int main(){
