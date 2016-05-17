@@ -21,6 +21,25 @@ typedef struct bloom_struct{
 	char bit_array8[250000];
 }bf_t;
 
+bf_t *create_bf(){
+	//creates a Bloom filter
+	bf_t *temp = (bf_t *)malloc(sizeof(bf_t));
+	int i;
+
+	for (i=0; i <250000; i++){
+		temp->bit_array1[i] = 0;
+		temp->bit_array2[i] = 0;
+		temp->bit_array3[i] = 0;
+		temp->bit_array4[i] = 0;
+		temp->bit_array5[i] = 0;
+		temp->bit_array6[i] = 0;
+		temp->bit_array7[i] = 0;
+		temp->bit_array8[i] = 0;
+	}
+
+	return temp;
+}
+
 void sample_string_A(char *s, long i){  
 	s[0] = (char)(1 + (i%254));
 	s[1] = (char)(1 + ((i/254)%254));
@@ -73,5 +92,9 @@ void sample_string_E(char *s, long i){
 }
 
 int main(){
+	long i,j; 
+	bf_t * bloom;
+	bloom = create_bf();
+	printf("Created Filter\n");
 	return 0;
 }
