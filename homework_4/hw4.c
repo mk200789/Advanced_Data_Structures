@@ -10,6 +10,16 @@
 
 #define BLOCKSIZE 256
 
+typedef struct bloom_struct{
+	char bit_array1[250000];
+	char bit_array2[250000];
+	char bit_array3[250000];
+	char bit_array4[250000];
+	char bit_array5[250000];
+	char bit_array6[250000];
+	char bit_array7[250000];
+	char bit_array8[250000];
+}bf_t;
 
 void sample_string_A(char *s, long i){  
 	s[0] = (char)(1 + (i%254));
