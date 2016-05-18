@@ -8,18 +8,40 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define BLOCKSIZE 256
+#define MAXP 46337  /* prime, and 46337*46337 < 2147483647 */
+#define MAX_HASH_STRINGS 250000
+
+typedef char object_t;
 
 typedef struct bloom_struct{
-	char bit_array1[250000];
-	char bit_array2[250000];
-	char bit_array3[250000];
-	char bit_array4[250000];
-	char bit_array5[250000];
-	char bit_array6[250000];
-	char bit_array7[250000];
-	char bit_array8[250000];
+	char bit_array1[MAX_HASH_STRINGS];
+	char bit_array2[MAX_HASH_STRINGS];
+	char bit_array3[MAX_HASH_STRINGS];
+	char bit_array4[MAX_HASH_STRINGS];
+	char bit_array5[MAX_HASH_STRINGS];
+	char bit_array6[MAX_HASH_STRINGS];
+	char bit_array7[MAX_HASH_STRINGS];
+	char bit_array8[MAX_HASH_STRINGS];
 }bf_t;
+
+typedef struct { 
+	int b;   
+	int size; 
+	struct htp_l_node *a_list;
+} hf_param_t;
+
+typedef struct l_node {
+	char *key;
+	object_t  *obj;
+	struct l_node  *next; 
+} list_node_t;
+
+typedef struct htp_l_node { 
+	int a; 
+	struct htp_l_node *next; 
+} htp_l_node_t; 
+
+
 
 bf_t *create_bf(){
 	//creates a Bloom filter
@@ -39,6 +61,8 @@ bf_t *create_bf(){
 
 	return temp;
 }
+
+
 
 void sample_string_A(char *s, long i){  
 	s[0] = (char)(1 + (i%254));
