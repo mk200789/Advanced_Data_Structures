@@ -43,7 +43,7 @@ typedef struct htp_l_node {
 } htp_l_node_t; 
 
 
-list_node_t *currentblock = NULL;
+list_node_t *current_block = NULL;
 list_node_t *free_list = NULL;
 int size_left;
 
@@ -54,14 +54,19 @@ list_node_t *get_node(){
 		free_list = free_list->next;
 	}
 	else{
-		if (currentblock == NULL || size_left == 0){
-			currentblock = (list_node_t *)malloc(BLOCKSIZE*sizeof(list_node_t));
+		if (current_block == NULL || size_left == 0){
+			current_block = (list_node_t *)malloc(BLOCKSIZE*sizeof(list_node_t));
 			size_left = BLOCKSIZE;
 		}
-		tmp = currentblock++;
+		tmp = current_block++;
 		size_left -= 1;
 	}
 	return tmp;
+}
+
+void return_node(list_node_t *node){
+	node->next = free_list;
+	free_list = node;
 }
 
 
