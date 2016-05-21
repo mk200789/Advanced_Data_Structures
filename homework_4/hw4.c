@@ -14,44 +14,45 @@
 
 typedef char object_t;
 
-typedef struct bloom_struct{
-	hf_param_t bf_params[10];
-	unsigned char *bits[10];
-}bf_t;
-
 typedef struct { 
 	int b;   
 	int size; 
 	struct htp_l_node *a_list;
 } hf_param_t;
 
+/*
 typedef struct l_node {
 	char *key;
 	object_t  *obj;
 	struct l_node  *next; 
 } list_node_t;
+*/
 
 typedef struct htp_l_node { 
 	int a; 
 	struct htp_l_node *next; 
 } htp_l_node_t; 
 
+typedef struct bloom_struct{
+	hf_param_t bf_params[10];
+	unsigned char *bits[10];
+}bf_t;
 
 char hexref[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
 
-list_node_t *current_block = NULL;
-list_node_t *free_list = NULL;
+htp_l_node_t *current_block = NULL;
+htp_l_node_t *free_list = NULL;
 int size_left;
 
-list_node_t *get_node(){
-	list_node_t *tmp;
+htp_l_node_t *get_node(){
+	htp_l_node_t *tmp;
 	if (free_list != NULL){
 		tmp = free_list;
 		free_list = free_list->next;
 	}
 	else{
 		if (current_block == NULL || size_left == 0){
-			current_block = (list_node_t *)malloc(BLOCKSIZE*sizeof(list_node_t));
+			current_block = (htp_l_node_t *)malloc(BLOCKSIZE*sizeof(htp_l_node_t));
 			size_left = BLOCKSIZE;
 		}
 		tmp = current_block++;
@@ -60,7 +61,7 @@ list_node_t *get_node(){
 	return tmp;
 }
 
-void return_node(list_node_t *node){
+void return_node(htp_l_node_t *node){
 	node->next = free_list;
 	free_list = node;
 }
@@ -69,7 +70,20 @@ void return_node(list_node_t *node){
 bf_t *create_bf(){
 	//creates a Bloom filter
 	bf_t *temp = (bf_t *)malloc(sizeof(bf_t));
-	int i;
+	int i, j;
+
+	for (i=0; i<8; i++){
+		temp->bf_params[i].b = rand()%MAXP;
+		temp->bf_params[i].a_list = get_node();
+		temp->bf_params[i].a_list->next = NULL;
+		temp->bits[i] = (unsigned char *) malloc(sizeof(char)*MAX_HASH_STRINGS);
+
+		for(j=0; j<MAX_HASH_STRINGS; j++){
+			(temp->bits[i])[j] = 0;
+		}
+	}
+
+	return temp;
 
 }
 
