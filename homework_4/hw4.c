@@ -15,14 +15,8 @@
 typedef char object_t;
 
 typedef struct bloom_struct{
-	char bit_array1[MAX_HASH_STRINGS];
-	char bit_array2[MAX_HASH_STRINGS];
-	char bit_array3[MAX_HASH_STRINGS];
-	char bit_array4[MAX_HASH_STRINGS];
-	char bit_array5[MAX_HASH_STRINGS];
-	char bit_array6[MAX_HASH_STRINGS];
-	char bit_array7[MAX_HASH_STRINGS];
-	char bit_array8[MAX_HASH_STRINGS];
+	hf_param_t bf_params[10];
+	unsigned char *bits[10];
 }bf_t;
 
 typedef struct { 
@@ -42,6 +36,8 @@ typedef struct htp_l_node {
 	struct htp_l_node *next; 
 } htp_l_node_t; 
 
+
+char hexref[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
 
 list_node_t *current_block = NULL;
 list_node_t *free_list = NULL;
@@ -75,18 +71,6 @@ bf_t *create_bf(){
 	bf_t *temp = (bf_t *)malloc(sizeof(bf_t));
 	int i;
 
-	for (i=0; i <250000; i++){
-		temp->bit_array1[i] = 0;
-		temp->bit_array2[i] = 0;
-		temp->bit_array3[i] = 0;
-		temp->bit_array4[i] = 0;
-		temp->bit_array5[i] = 0;
-		temp->bit_array6[i] = 0;
-		temp->bit_array7[i] = 0;
-		temp->bit_array8[i] = 0;
-	}
-
-	return temp;
 }
 
 
