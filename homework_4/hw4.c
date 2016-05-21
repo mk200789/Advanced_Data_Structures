@@ -36,6 +36,7 @@ typedef struct htp_l_node {
 typedef struct bloom_struct{
 	hf_param_t bf_params[10];
 	unsigned char *bits[10];
+	int (*hashfunction)(char *, hf_param_t); 
 }bf_t;
 
 char hexref[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
@@ -66,6 +67,24 @@ void return_node(htp_l_node_t *node){
 	free_list = node;
 }
 
+int universal_hash_function(char *key, hf_param_t hfp)
+{  
+	int sum;
+   htp_l_node_t *al;
+   sum = hfp.b;
+   al = hfp.a_list;
+   while( *key != '\0' )
+   {  if( al->next == NULL )
+      {   al->next = (htp_l_node_t *) get_node();
+          al->next->next = NULL;
+          al->a = rand()%MAXP;
+      }
+      sum += ( (al->a)*((int) *key))%MAXP;
+      key += 1;
+      al = al->next;
+   }
+   return( sum%hfp.size );
+}
 
 bf_t *create_bf(){
 	//creates a Bloom filter
@@ -83,6 +102,7 @@ bf_t *create_bf(){
 		}
 	}
 
+	
 	return temp;
 
 }
