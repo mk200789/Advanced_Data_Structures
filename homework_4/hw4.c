@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 #define BLOCKSIZE 256
-#define MAXP 46337  /* prime, and 46337*46337 < 2147483647 */
+#define MAXP 2278320 
 #define MAX_HASH_STRINGS 250000
 
 typedef char object_t;
@@ -20,14 +20,6 @@ typedef struct {
 	struct htp_l_node *a_list;
 } hf_param_t;
 
-/*
-typedef struct l_node {
-	char *key;
-	object_t  *obj;
-	struct l_node  *next; 
-} list_node_t;
-*/
-
 typedef struct htp_l_node { 
 	int a; 
 	struct htp_l_node *next; 
@@ -36,7 +28,6 @@ typedef struct htp_l_node {
 typedef struct bloom_struct{
 	hf_param_t bf_params[10];
 	unsigned char *bits[10];
-	int (*hashfunction)(char *, hf_param_t); 
 }bf_t;
 
 char hexref[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
@@ -44,6 +35,7 @@ char hexref[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
 htp_l_node_t *current_block = NULL;
 htp_l_node_t *free_list = NULL;
 int size_left;
+
 
 htp_l_node_t *get_node(){
 	htp_l_node_t *tmp;
@@ -67,27 +59,29 @@ void return_node(htp_l_node_t *node){
 	free_list = node;
 }
 
-int universal_hash_function(char *key, hf_param_t hfp)
-{  
+int universal_hash_function(char *key, hf_param_t hfp){  
 	int sum;
-   htp_l_node_t *al;
-   sum = hfp.b;
-   al = hfp.a_list;
-   while( *key != '\0' )
-   {  if( al->next == NULL )
-      {   al->next = (htp_l_node_t *) get_node();
-          al->next->next = NULL;
-          al->a = rand()%MAXP;
-      }
-      sum += ( (al->a)*((int) *key))%MAXP;
-      key += 1;
-      al = al->next;
+	htp_l_node_t *al;
+	sum = hfp.b;
+	al = hfp.a_list;
+
+	while( *key != '\0' ){  
+		if( al->next == NULL ){   
+			al->next = (htp_l_node_t *) get_node();
+			al->next->next = NULL;
+			al->a = rand()%MAXP;
+		}	
+		sum += abs( (al->a)*((int) *key))%MAXP;
+		key += 1;
+		al = al->next;
    }
-   return( sum%hfp.size );
+
+   return( sum%2000000 );
 }
 
 bf_t *create_bf(){
 	//creates a Bloom filter
+
 	bf_t *temp = (bf_t *)malloc(sizeof(bf_t));
 	int i, j;
 
@@ -102,11 +96,42 @@ bf_t *create_bf(){
 		}
 	}
 
-	
 	return temp;
-
 }
 
+void insert_bf(bf_t *b, char *s){
+	//Inserts the string `*s` into the Bloom filter *b
+
+	int i;
+	if (b == NULL){
+		return;
+	}
+
+	for(i=0; i<8; i++){
+		int j = universal_hash_function(s, b->bf_params[i]);
+		(b->bits[i])[j/8] = (b->bits[i])[j/8] | hexref[j%8];
+	}
+}
+
+int is_element(bf_t *b, char *q){
+	//Returns 1 if string *q is accepted by the Bloom filter, and 0 else
+
+	if (b == NULL){
+		printf("ERROR\n");
+		exit(-1);
+	}
+
+	int i;
+
+	for(i=0; i<8; i++){
+		int j = universal_hash_function(q, b->bf_params[i]);
+		
+		if (((b->bits[i])[j/8] & hexref[j%8]) == 0x00){
+			return 0;
+		}
+	}
+	return 1;
+}
 
 
 void sample_string_A(char *s, long i){  
@@ -165,5 +190,68 @@ int main(){
 	bf_t * bloom;
 	bloom = create_bf();
 	printf("Created Filter\n");
+
+	for( i= 0; i< 1450000; i++ ){  
+		char s[8];
+		sample_string_A(s,i);
+		insert_bf( bloom, s );
+	}
+
+	for( i= 0; i< 500000; i++ ){  
+		char s[7];
+		sample_string_B(s,i);
+		insert_bf( bloom, s );
+	}
+
+	for( i= 0; i< 50000; i++ ){  
+		char s[6];
+		sample_string_C(s,i);
+		insert_bf( bloom, s );
+	}
+	
+	printf("inserted 2,000,000 strings of length 8,7,6.\n");
+
+	for( i= 0; i< 1450000; i++ ){  
+		char s[8];
+		sample_string_A(s,i);
+		if( is_element( bloom, s ) != 1 ){  
+			printf("found negative error (1)\n"); exit(0); }
+	}
+
+
+	for( i= 0; i< 500000; i++ ){  
+		char s[7];
+		sample_string_B(s,i);
+		if( is_element( bloom, s ) != 1 ){  
+			printf("found negative error (2)\n"); exit(0); 
+		}
+	}
+
+	for( i= 0; i< 50000; i++ ){  
+		char s[6];
+		sample_string_C(s,i);
+		if( is_element( bloom, s ) != 1 ){  
+			printf("found negative error (3)\n"); exit(0); 
+		}
+	}
+
+	j = 0;
+	for( i= 0; i< 500000; i++ ){  
+		char s[8];
+		sample_string_D(s,i);
+		if( is_element( bloom, s ) != 0 )
+			j+=1;
+	}
+
+	for( i= 0; i< 500000; i++ ){  
+		char s[7];
+		sample_string_E(s,i);
+		if( is_element( bloom, s ) != 0 )
+			j+=1;
+	}
+
+	printf("Found %ld positive errors out of 1,000,000 tests.\n",j);
+	printf("Positive error rate %f.\n", (float)j/10000.0);
+
 	return 0;
 }
