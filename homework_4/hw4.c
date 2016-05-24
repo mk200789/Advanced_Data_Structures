@@ -1,4 +1,5 @@
 /*
+
 	Homework 4
 	
 	Compiles and run with command lines
@@ -10,6 +11,8 @@
 
 #define BLOCKSIZE 256
 #define MAXP 2278320 
+#define NUM_ARRAY 8
+#define STRING_SIZE 8
 #define MAX_HASH_STRINGS 250000
 
 typedef char object_t;
@@ -85,7 +88,7 @@ bf_t *create_bf(){
 	bf_t *temp = (bf_t *)malloc(sizeof(bf_t));
 	int i, j;
 
-	for (i=0; i<8; i++){
+	for (i=0; i<NUM_ARRAY; i++){
 		temp->bf_params[i].b = rand()%MAXP;
 		temp->bf_params[i].a_list = get_node();
 		temp->bf_params[i].a_list->next = NULL;
@@ -107,9 +110,9 @@ void insert_bf(bf_t *b, char *s){
 		return;
 	}
 
-	for(i=0; i<8; i++){
+	for(i=0; i<NUM_ARRAY; i++){
 		int j = universal_hash_function(s, b->bf_params[i]);
-		(b->bits[i])[j/8] = (b->bits[i])[j/8] | hexref[j%8];
+		(b->bits[i])[j/STRING_SIZE] = (b->bits[i])[j/STRING_SIZE] | hexref[j%STRING_SIZE];
 	}
 }
 
@@ -123,10 +126,10 @@ int is_element(bf_t *b, char *q){
 
 	int i;
 
-	for(i=0; i<8; i++){
+	for(i=0; i<NUM_ARRAY; i++){
 		int j = universal_hash_function(q, b->bf_params[i]);
 		
-		if (((b->bits[i])[j/8] & hexref[j%8]) == 0x00){
+		if (((b->bits[i])[j/STRING_SIZE] & hexref[j%STRING_SIZE]) == 0x00){
 			return 0;
 		}
 	}
